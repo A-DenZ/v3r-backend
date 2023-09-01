@@ -13,6 +13,6 @@ const articleSchema = mongoose.Schema({
     
 }, { timestamps: true })
 
-const ArticleModel = mongoose.model('ArticleModel', articleSchema , 'Articles' )
+const ArticleModel = mongoose.model('ArticleModel', articleSchema, 'Articles' )
 
 export default ArticleModel
