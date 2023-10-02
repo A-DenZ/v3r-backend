@@ -16,12 +16,6 @@ app.use(cors());
 
 app.use('/user' , userRoutes)
 
-// app.get('/users', async (req, res) => { 
-//     const users  = await getUser();
-//     res.send(users);
-//     console.log("a request was made")
-// });
-
 
 app.use((err , req , res , next) => {
     console.error(err.stack);
