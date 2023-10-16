@@ -12,18 +12,4 @@ const pool = mysql.createPool({
 
 
 
-
-// async function getUser() {
-//   const [rows] = await pool.query("SELECT * FROM `user`");
-
-//   return rows;
-
-// }
-
-// const users =  await getUser();
-
-// console.log(users);
-
-
-
 export default pool;

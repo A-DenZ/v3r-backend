@@ -1,0 +1,1 @@
+export const defaultInputFilter = new RegExp(/^[\t\r\n]|(--[^\r\n]*)|(\/\*[\w\W]*?(?=\*)\*\$/);
