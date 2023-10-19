@@ -1,6 +1,30 @@
-import { defaultInputFilter } from "../regexp/regexp"
+import { defaultInputFilter , numberFilter } from "../regexp/regexp"
 export const validateForm = (id,userID,firstName,lastName,formName) => {
+    let isValid = true
+    let validStatus = 200
+    let invalidStatus = 400
+    let okMessage = "Le formulaire à été correctement validé.";
+    let blockMessage = "Une erreur de saisie bloque l'envoi du formulaire."
+
+    if(!numberFilter.test(id)){
+        isValid = false
+    }
+
+    if(!numberFilter.test(userID)){
+        isValid = false
+    }
+
+    // PROTECTION CONTRE L'INJECTION SQL ET L'INJECTION DE SCRIPT
+
+    if(defaultInputFilter.test(firstName)){
+        isValid = false
+    }
+
+    if(defaultInputFilter.test(lastName)){
+        isValid = false
+    }
     
+
 }
 
 export const validateAudiSST = (incidentPlace, incidentDate, incidentHour, EPI, placeConform, safeComportement, signalytics, signalyticsSheets, workingExcavation, confinedSpace, workingMethod, others, distanceRespected, EPIAreOn, procedureRespect, incidentDescription) => {
@@ -71,9 +95,10 @@ export const validateAudiSST = (incidentPlace, incidentDate, incidentHour, EPI, 
         isValid = false;
     }
 
+    // PROTECTION CONTRE L'INJECTION SQL ET L'INJECTION DE SCRIPT
     if(defaultInputFilter.test(incidentDescription)) {
         isValid = false;
-    } // PROTECTION CONTRE L'INJECTION SQL ET L'INJECTION DE SCRIPT
+    } 
 
 
     if(isValid) {
