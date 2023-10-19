@@ -23,6 +23,17 @@ export const validateForm = (id,userID,firstName,lastName,formName) => {
     if(defaultInputFilter.test(lastName)){
         isValid = false
     }
+
+    if(formName !== "SSD" || formName !== "AuditSST" || formName !== "WorkingAccidentReport" || formName !== "IncidentReport"){
+        isValid = false
+    }
+    
+    if(isValid) {
+        return [true, validStatus , okMessage]
+    }
+    else{
+        return [false, invalidStatus, blockMessage]
+    }
     
 
 }
