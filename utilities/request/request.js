@@ -1,4 +1,4 @@
-import { defaultInputFilter , numberFilter, driverLicenseFilter } from "../regexp/regexp"
+import { defaultInputFilter , numberFilter, driverLicenseFilter, dateFilter } from "../regexp/regexp"
 
 export const validateForm = (id,userID,firstName,lastName,formName) => {
     let isValid = true
@@ -7,21 +7,21 @@ export const validateForm = (id,userID,firstName,lastName,formName) => {
     let okMessage = "Le formulaire à été correctement validé.";
     let blockMessage = "Une erreur de saisie bloque l'envoi du formulaire."
 
-    if(!numberFilter.test(id)){
+    if(!numberFilter.test(id)){ // à ajuster peux-être
         isValid = false
     }
 
-    if(!numberFilter.test(userID)){
+    if(!numberFilter.test(userID)){ // à ajuster peux-être
         isValid = false
     }
 
     // PROTECTION CONTRE L'INJECTION SQL ET L'INJECTION DE SCRIPT
 
-    if(defaultInputFilter.test(firstName)){
+    if(defaultInputFilter.test(firstName) || firstName == "" || firstName == null){
         isValid = false
     }
 
-    if(defaultInputFilter.test(lastName)){
+    if(defaultInputFilter.test(lastName) || lastName == "" || lastName == null ){
         isValid = false
     }
 
@@ -108,7 +108,7 @@ export const validateAudiSST = (incidentPlace, incidentDate, incidentHour, EPI, 
     }
 
     // PROTECTION CONTRE L'INJECTION SQL ET L'INJECTION DE SCRIPT
-    if(defaultInputFilter.test(incidentDescription)) {
+    if(defaultInputFilter.test(incidentDescription) || incidentDescription == "" || incidentDescription == null) {
         isValid = false;
     } 
 
@@ -130,19 +130,19 @@ export const validateIncidentReport = (unitsInvolved,departement,superior,driver
     let okMessage = "Le formulaire à été correctement validé.";
     let blockMessage = "Une erreur de saisie bloque l'envoi du formulaire."
 
-    if(!numberFilter.test(unitsInvolved)) {
+    if(!numberFilter.test(unitsInvolved) || unitsInvolved == "" || unitsInvolved == null) {
         isValid = false
     }
 
-    if(defaultInputFilter.test(departement)){
+    if(defaultInputFilter.test(departement) || departement == "" || departement == null){
         isValid = false
     }
 
-    if(defaultInputFilter.test(superior)){
+    if(defaultInputFilter.test(superior) || superior == "" || departement == null){
         isValid = false
     }
 
-    if(!driverLicenseFilter.test(driverLicense)){
+    if(!driverLicenseFilter.test(driverLicense) || driverLicense == "" || driverLicense == null){
         isValid = false
     }
 
@@ -167,17 +167,21 @@ export const validateWorkingAccidentReport = (employeeCode,fonctionWhenHappend,a
     let okMessage = "Le formulaire à été correctement validé.";
     let blockMessage = "Une erreur de saisie bloque l'envoi du formulaire."
 
-    if(defaultInputFilter.test(employeeCode)){
+    if(defaultInputFilter.test(employeeCode) || employeeCode == "" || fonctionWhenHappend == null){
         isValid = false
     }
 
-    if(defaultInputFilter.test(fonctionWhenHappend)){
+    if(defaultInputFilter.test(fonctionWhenHappend) || fonctionWhenHappend == "" || fonctionWhenHappend == null){
         isValid = false
     }
 
-    if(accidentDate){
-        
+    if(!dateFilter.test(accidentDate) || accidentDate == "" || accidentDate == null){
+        isValid = false
     }
+
+    
+
+
 
 
 

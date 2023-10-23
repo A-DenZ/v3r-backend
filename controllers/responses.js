@@ -92,10 +92,7 @@ export const storeAuditSSTResponse = async (req, res) => {
               
                 // send notification mail
                 if (storeBaseFormQuery && storeAuditSSTQuery ){
-                  sendMailNotification(firstName = superiorName, 
-                                       firstMail = superiorEmail,
-                                       secondName = adminName, 
-                                       secondMail = adminEmail)
+                  //sendMailNotification(superiorName, superiorEmail, adminName, adminEmail)
                 }
 
     

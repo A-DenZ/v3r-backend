@@ -23,13 +23,6 @@ app.use((err , req , res , next) => {
     res.status(500).send('Something broke!');
 });
 
-if(defaultInputFilter.test("wawddawdwdad"))
-{
-    console.log("oui")
-}
-else{
-    console.log("non")
-}
 
 
 app.listen(PORT, () => { 
