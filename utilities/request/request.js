@@ -1,4 +1,5 @@
-import { defaultInputFilter , numberFilter } from "../regexp/regexp"
+import { defaultInputFilter , numberFilter, driverLicenseFilter } from "../regexp/regexp"
+
 export const validateForm = (id,userID,firstName,lastName,formName) => {
     let isValid = true
     let validStatus = 200
@@ -118,5 +119,66 @@ export const validateAudiSST = (incidentPlace, incidentDate, incidentHour, EPI, 
     else{
         return [false, invalidStatus, blockMessage]
     }
+
+}
+
+export const validateIncidentReport = (unitsInvolved,departement,superior,driverLicense) => {
+
+    let isValid = true
+    let validStatus = 200
+    let invalidStatus = 400
+    let okMessage = "Le formulaire à été correctement validé.";
+    let blockMessage = "Une erreur de saisie bloque l'envoi du formulaire."
+
+    if(!numberFilter.test(unitsInvolved)) {
+        isValid = false
+    }
+
+    if(defaultInputFilter.test(departement)){
+        isValid = false
+    }
+
+    if(defaultInputFilter.test(superior)){
+        isValid = false
+    }
+
+    if(!driverLicenseFilter.test(driverLicense)){
+        isValid = false
+    }
+
+
+    if(isValid) {
+        return [true, validStatus , okMessage]
+    }
+    else{
+        return [false, invalidStatus, blockMessage]
+    }
+
+
+
+}
+
+
+export const validateWorkingAccidentReport = (employeeCode,fonctionWhenHappend,accidentDate,accidentHour,witnesses,accidentPlace,activityCenter,injuries,injuriesDescription,physicalViolence,verbalViolence,accidentDescription,firstAid,secouristName,medicalConsultation,superiorIsAdvised,superior,superiorAdvisedOn,superiorSignature,superiorSignatureDate,superiorPostNum,workerSignature,workerSignatureDate,workerPostNum) => {
+
+    let isValid = true
+    let validStatus = 200
+    let invalidStatus = 400
+    let okMessage = "Le formulaire à été correctement validé.";
+    let blockMessage = "Une erreur de saisie bloque l'envoi du formulaire."
+
+    if(defaultInputFilter.test(employeeCode)){
+        isValid = false
+    }
+
+    if(defaultInputFilter.test(fonctionWhenHappend)){
+        isValid = false
+    }
+
+    if(accidentDate){
+        
+    }
+
+
 
 }
