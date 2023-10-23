@@ -1,5 +1,8 @@
+
 import pool from "../config/db.config.js"
 import { validateAudiSST, validateForm , validateIncidentReport } from "../utilities/request/request"
+import { sendMailNotification } from "../utilities/mailjet/mailjet"
+
 
 export const storeAuditSSTResponse = async (req, res) => {
         try {
@@ -33,7 +36,9 @@ export const storeAuditSSTResponse = async (req, res) => {
                         distanceRespected,
                         EPIAreOn,
                         procedureRespect,
-                        incidentDescription } = req.body
+                        incidentDescription,
+
+                        superior } = req.body
                 
                 const storeValidForm = validateForm(id,userID,firstName,lastName,formName)
                 const storeValidAuditSST = validateAudiSST(incidentPlace, incidentDate, incidentHour, EPI, placeConform, safeComportement, signalytics, signalyticsSheets, workingExcavation, confinedSpace, workingMethod, others, distanceRespected, EPIAreOn, procedureRespect, incidentDescription) // returns array conataining [boolean, status, message]
@@ -44,9 +49,8 @@ export const storeAuditSSTResponse = async (req, res) => {
                 const returnObject = {id,userID,firstName,lastName,formName,incidentPlace, incidentDate, incidentHour, EPI, placeConform, safeComportement, signalytics, signalyticsSheets, workingExcavation, confinedSpace, workingMethod, others, distanceRespected, EPIAreOn, procedureRespect, incidentDescription}
                 const sqlInsertBaseForm = "INSERT INTO Form (id,userID,firstName,lastName,formName) VALUES (?,?,?,?,?)"
                 const sqlInsertAuditSST = "INSERT INTO AuditSST (formID, incidentPlace, incidentDate, incidentHour, EPI, placeConform, safeComportement, signalytics, signalyticsSheets, workingExcavation, confinedSpace, workingMethod, others, distanceRespected, EPIAreOn, procedureRespect, incidentDescription) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
-
                 
-
+                
                 const storeBaseFormQuery = await pool.query(sqlInsertBaseForm, [
                                                                                 id,
                                                                                 userID,
@@ -79,6 +83,21 @@ export const storeAuditSSTResponse = async (req, res) => {
                 
 
                 res.status(201).json(returnObject) // à voir si on fetch pas la bd à la place.
+
+
+                   const superiorName = superior
+                // const superiorEmail = "SELECT email ....... "   BESOIN DU EMAIL DU SUPÉRIEUR POUR ENVOYER LE MAIL
+                // const adminName = "SELECT name ....... "    BESOIN DU NOM DE L'ADMIN POUR ENVOYER LE MAIL
+                // const adminEmail = "SELECT email ....... "   BESOIN DU EMAIL DU ADMIN POUR ENVOYER LE MAIL
+              
+                // send notification mail
+                if (storeBaseFormQuery && storeAuditSSTQuery ){
+                  sendMailNotification(firstName = superiorName, 
+                                       firstMail = superiorEmail,
+                                       secondName = adminName, 
+                                       secondMail = adminEmail)
+                }
+
     
         }
         catch(error){
