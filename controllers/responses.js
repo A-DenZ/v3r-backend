@@ -1,7 +1,7 @@
 
 import pool from "../config/db.config.js"
-import { validateAudiSST, validateForm , validateIncidentReport } from "../utilities/request/request"
-import { sendMailNotification } from "../utilities/mailjet/mailjet"
+import { validateAudiSST, validateForm , validateIncidentReport , validateWorkingAccidentReport , validateSSD } from "../utilities/request/request.js"
+import { sendMailNotification } from "../utilities/mailjet/mailjet.js"
 
 
 export const storeAuditSSTResponse = async (req, res) => {
@@ -108,7 +108,7 @@ export const storeAuditSSTResponse = async (req, res) => {
 
 export const storeIncidentReportResponse = async (req, res) => {
         try{
-                const { id,
+                const {
                         userID,
                         firstName,
                         lastName,
@@ -160,7 +160,7 @@ export const storeIncidentReportResponse = async (req, res) => {
 }
 
 
-export const WorkingAccidentReport = async (req, res) => {
+export const storeWorkingAccidentReport = async (req, res) => {
 
         try{
 
@@ -247,7 +247,7 @@ export const WorkingAccidentReport = async (req, res) => {
 }
 
 
-export const SSD = async (req,res) => {
+export const storeSSD = async (req,res) => {
         try{
 
                 const {
@@ -269,6 +269,44 @@ export const SSD = async (req,res) => {
                         superior,
                         superiorAdvisedOn,
                         superiorPostNum} = req.body
+                
+                const storeValidForm = validateForm(id,userID,firstName,lastName,formName)
+                const storeValidSSD  = validateSSD(employeeCode,fonctionWhenHappend,activityCenter,incidentDate,incidentHour,witnesses,incidentDescription,correctionsOrAddOn,superiorIsAdvised,superior,superiorAdvisedOn,superiorPostNum)
+                
+                const returnObject = {id,userID,firstName,lastName,formName,employeeCode,fonctionWhenHappend,activityCenter,incidentDate,incidentHour,witnesses,incidentDescription,correctionsOrAddOn,superiorIsAdvised,superior,superiorAdvisedOn,superiorPostNum}
+
+                if(!storeValidForm?.[0]) return res.status(v?.[1]).json({message: v?.[2]})
+                if(!storeValidSSD?.[0]) return res.status(v?.[1]).json({message: v?.[2]})
+
+                const sqlInsertBaseForm = "INSERT INTO Form (id,userID,firstName,lastName,formName) VALUES (?,?,?,?,?)"
+                const sqlInsertSSD = "INSERT INTO Form (formID,employeeCode,fonctionWhenHappend,activityCenter,incidentDate,incidentHour,witnesses,incidentDescription,correctionsOrAddOn,superiorIsAdvised,superior,superiorAdvisedOn,superiorPostNum) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)"
+                
+
+                const storeBaseFormQuery = await pool.query(sqlInsertBaseForm, [
+                                                                                id,
+                                                                                userID,
+                                                                                firstName,
+                                                                                lastName,
+                                                                                formName
+                                                                                ]
+                                                           )
+                const storeSDDQuery = await pool.query(sqlInsertSSD, [
+                                                                        employeeCode,
+                                                                        fonctionWhenHappend,
+                                                                        activityCenter,
+                                                                        incidentDate,
+                                                                        incidentHour,
+                                                                        witnesses,
+                                                                        incidentDescription,
+                                                                        correctionsOrAddOn,
+                                                                        superiorIsAdvised,
+                                                                        superior,
+                                                                        superiorAdvisedOn,
+                                                                        superiorPostNum 
+                                                                     ]
+                                                      )
+                
+                res.status(201).json(returnObject) // à voir si on fetch pas la bd à la place.  
 
         }catch(error){
                 console.log(error)

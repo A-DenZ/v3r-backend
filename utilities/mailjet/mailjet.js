@@ -1,5 +1,5 @@
 import Mailjet from "node-mailjet"
-import { emailTemplate } from '../utilities/template/emailTemplate'
+import { emailTemplate } from '../template/emailTemplate.js'
 
 
 export const sendMailNotification = async (firstName, firstEmail, secondName , secondEmail) => {

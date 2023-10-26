@@ -1,4 +1,4 @@
-import { defaultInputFilter , numberFilter, driverLicenseFilter, dateFilter, hourFilter } from "../regexp/regexp"
+import { defaultInputFilter , numberFilter, driverLicenseFilter, dateFilter, hourFilter } from "../regexp/regexp.js"
 
 export const validateForm = (id,userID,firstName,lastName,formName) => {
     let isValid = true
@@ -258,3 +258,71 @@ export const validateWorkingAccidentReport = (employeeCode,fonctionWhenHappend,a
 
 }
 
+export const validateSSD = (employeeCode,fonctionWhenHappend,activityCenter,incidentDate,incidentHour,witnesses,incidentDescription,correctionsOrAddOn,superiorIsAdvised,superior,superiorAdvisedOn,superiorPostNum) => {
+
+    let isValid = true
+    let validStatus = 200
+    let invalidStatus = 400
+    let okMessage = "Le formulaire à été correctement validé.";
+    let blockMessage = "Une erreur de saisie bloque l'envoi du formulaire."
+
+    if(defaultInputFilter.test(employeeCode) || employeeCode == "" || fonctionWhenHappend == null){
+        isValid = false
+    }
+
+    if(defaultInputFilter.test(fonctionWhenHappend) || fonctionWhenHappend == "" || fonctionWhenHappend == null){
+        isValid = false
+    }
+
+    if(!dateFilter.test(incidentDate) || incidentDate == "" || accidentDate == null){
+        isValid = false
+    }
+
+    if(!hourFilter.test(incidentHour) || incidentHour == "" || accidentHour == null){
+        isValid = false
+    }
+
+    if(defaultInputFilter.test(witnesses) || witnesses == "" || witnesses == null){
+        isValid = false
+    }
+
+    if(defaultInputFilter.test(accidentPlace) || accidentPlace == "" || accidentPlace == null){
+        isValid = false
+    }
+
+    if(defaultInputFilter.test(activityCenter) || activityCenter == "" || activityCenter == null){
+        isValid = false
+    }
+
+    if(defaultInputFilter.test(incidentDescription) || incidentDescription == "" || incidentDescription == null){
+        isValid = false
+    }
+
+    if(defaultInputFilter.test(correctionsOrAddOn) || correctionsOrAddOn == "" || correctionsOrAddOn == null){
+        isValid = false
+    }
+
+    if(superiorIsAdvised == null){
+        isValid = false
+    }
+    
+    if(defaultInputFilter.test(superior) || superior == "" || superior == null){ // à voir si il y a un supérieur ou non
+        isValid = false
+    }
+
+    if(!dateFilter.test(superiorAdvisedOn) || superiorAdvisedOn == "" || superiorAdvisedOn == null){
+        isValid = false
+    }
+
+    if(!numberFilter.test(superiorPostNum) || superiorPostNum == "" || superiorPostNum == null){
+        isValid = false
+    }
+
+    if(isValid) {
+        return [true, validStatus , okMessage]
+    }
+    else{
+        return [false, invalidStatus, blockMessage]
+    }
+
+}
