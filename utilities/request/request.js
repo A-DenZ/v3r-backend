@@ -1,4 +1,4 @@
-import { defaultInputFilter , numberFilter, driverLicenseFilter, dateFilter } from "../regexp/regexp"
+import { defaultInputFilter , numberFilter, driverLicenseFilter, dateFilter, hourFilter } from "../regexp/regexp"
 
 export const validateForm = (id,userID,firstName,lastName,formName) => {
     let isValid = true
@@ -159,7 +159,7 @@ export const validateIncidentReport = (unitsInvolved,departement,superior,driver
 }
 
 
-export const validateWorkingAccidentReport = (employeeCode,fonctionWhenHappend,accidentDate,accidentHour,witnesses,accidentPlace,activityCenter,injuries,injuriesDescription,physicalViolence,verbalViolence,accidentDescription,firstAid,secouristName,medicalConsultation,superiorIsAdvised,superior,superiorAdvisedOn,superiorSignature,superiorSignatureDate,superiorPostNum,workerSignature,workerSignatureDate,workerPostNum) => {
+export const validateWorkingAccidentReport = (employeeCode,fonctionWhenHappend,accidentDate,accidentHour,witnesses,accidentPlace,activityCenter,injuries,injuriesDescription,physicalViolence,verbalViolence,accidentDescription,firstAid,secouristName,medicalConsultation,superiorIsAdvised,superior,superiorAdvisedOn,superiorPostNum,workerPostNum) => {
 
     let isValid = true
     let validStatus = 200
@@ -179,10 +179,82 @@ export const validateWorkingAccidentReport = (employeeCode,fonctionWhenHappend,a
         isValid = false
     }
 
+    if(!hourFilter.test(accidentHour) || accidentHour == "" || accidentHour == null){
+        isValid = false
+    }
+
+    if(defaultInputFilter.test(witnesses) || witnesses == "" || witnesses == null){
+        isValid = false
+    }
+
+    if(defaultInputFilter.test(accidentPlace) || accidentPlace == "" || accidentPlace == null){
+        isValid = false
+    }
+
+    if(defaultInputFilter.test(activityCenter) || activityCenter == "" || activityCenter == null){
+        isValid = false
+    }
+
+    if(defaultInputFilter.test(injuries) || injuries == "" || injuries == null){
+        isValid = false
+    }
+
+    if(defaultInputFilter.test(injuriesDescription) || injuriesDescription == "" || injuriesDescription == null){
+        isValid = false
+    }
+
+    if(physicalViolence == null){
+        isValid = false
+    }
+
+    if(verbalViolence == null){
+        isValid = false
+    }
+
+    if(defaultInputFilter.test(accidentDescription) || accidentDescription == "" || accidentDescription == null){
+        isValid = false
+    }
+
+    if(defaultInputFilter.test(firstAid) || firstAid == "" || firstAid == null){
+        isValid = false
+    }
+
+    if(defaultInputFilter.test(secouristName) || secouristName == "" || secouristName == null){
+        isValid = false
+    }
+
+    if(medicalConsultation == null){
+        isValid = false
+    }
+
+    if(superiorIsAdvised == null){
+        isValid = false
+    }
     
+    if(defaultInputFilter.test(superior) || superior == "" || superior == null){ // à voir si il y a un supérieur ou non
+        isValid = false
+    }
+
+    if(!dateFilter.test(superiorAdvisedOn) || superiorAdvisedOn == "" || superiorAdvisedOn == null){
+        isValid = false
+    }
+
+    if(!numberFilter.test(superiorPostNum) || superiorPostNum == "" || superiorPostNum == null){
+        isValid = false
+    }
+
+    if(!numberFilter.test(workerPostNum) || workerPostNum == "" || workerPostNum == null){
+        isValid = false
+    }
 
 
-
+    if(isValid) {
+        return [true, validStatus , okMessage]
+    }
+    else{
+        return [false, invalidStatus, blockMessage]
+    }
 
 
 }
+

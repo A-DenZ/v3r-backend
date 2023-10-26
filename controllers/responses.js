@@ -128,7 +128,7 @@ export const storeIncidentReportResponse = async (req, res) => {
                 if(!storeValidIncidentReport?.[0]) return res.status(v?.[1]).json({ message: v?.[2] })
 
                 const sqlInsertBaseForm = "INSERT INTO Form (id,userID,firstName,lastName,formName) VALUES (?,?,?,?,?)"
-                const sqlInsertIncidentReport = "INSERT INTO (formID,unitsInvolved,departement,superior,driverLicense) VALUES (?,?,?,?,?)"
+                const sqlInsertIncidentReport = "INSERT INTO IncidentReport (formID,unitsInvolved,departement,superior,driverLicense) VALUES (?,?,?,?,?)"
                 const returnObject = {id,userID,firstName,lastName,formName,unitsInvolved,departement,superior,driverLicense}
 
                 const storeBaseFormQuery = await pool.query(sqlInsertBaseForm, [
@@ -160,7 +160,7 @@ export const storeIncidentReportResponse = async (req, res) => {
 }
 
 
-export const WorkingAccidentReport = async (req, res) =>{
+export const WorkingAccidentReport = async (req, res) => {
 
         try{
 
@@ -188,15 +188,55 @@ export const WorkingAccidentReport = async (req, res) =>{
                         superiorIsAdvised,
                         superior,
                         superiorAdvisedOn,
-                        superiorSignature,
-                        superiorSignatureDate,
                         superiorPostNum,
-                        workerSignature,
-                        workerSignatureDate,
                         workerPostNum } = req.body
 
                 const storeValidForm = validateForm(id,userID,firstName,lastName,formName)
-                const storeValidWorkingAccidentReport = validateWorkingAccidentReport(employeeCode,fonctionWhenHappend,accidentDate,accidentHour,witnesses,accidentPlace,activityCenter,injuries,injuriesDescription,physicalViolence,verbalViolence,accidentDescription,firstAid,secouristName,medicalConsultation,superiorIsAdvised,superior,superiorAdvisedOn,superiorSignature,superiorSignatureDate,superiorPostNum,workerSignature,workerSignatureDate,workerPostNum)
+                const storeValidWorkingAccidentReport = validateWorkingAccidentReport(employeeCode,fonctionWhenHappend,accidentDate,accidentHour,witnesses,accidentPlace,activityCenter,injuries,injuriesDescription,physicalViolence,verbalViolence,accidentDescription,firstAid,secouristName,medicalConsultation,superiorIsAdvised,superior,superiorAdvisedOn,superiorPostNum,workerPostNum)
+                
+
+                if(!storeValidForm?.[0]) return res.status(v?.[1]).json({message: v?.[2]})
+                if(!storeValidWorkingAccidentReport?.[0]) return res.status(v?.[1]).json({ message: v?.[2] })
+                
+
+                const sqlInsertBaseForm = "INSERT INTO Form (id,userID,firstName,lastName,formName) VALUES (?,?,?,?,?)"
+                const sqlInsertWorkingAccidentReport = "INSERT INTO WorkingAccidentReport (formID,employeeCode,fonctionWhenHappend,accidentDate,accidentHour,witnesses,accidentPlace,activityCenter,injuries,injuriesDescription,physicalViolence,verbalViolence,accidentDescription,firstAid,secouristName,medicalConsultation,superiorIsAdvised,superior,superiorAdvisedOn,superiorPostNum,workerPostNum) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)" 
+                const returnObject = {id,userID,firstName,lastName,formName,employeeCode,fonctionWhenHappend,accidentDate,accidentHour,witnesses,accidentPlace,activityCenter,injuries,injuriesDescription,physicalViolence,verbalViolence,accidentDescription,firstAid,secouristName,medicalConsultation,superiorIsAdvised,superior,superiorAdvisedOn,superiorPostNum,workerPostNum}
+
+                const storeBaseFormQuery = await pool.query(sqlInsertBaseForm, [
+                                                                                id,
+                                                                                userID,
+                                                                                firstName,
+                                                                                lastName,
+                                                                                formName
+                                                                                ]
+                                                        )
+
+                const storeWorkingAccidentReportQuery = await pool.query(sqlInsertWorkingAccidentReport, [
+                                                                                                        employeeCode,
+                                                                                                        fonctionWhenHappend,
+                                                                                                        accidentDate,
+                                                                                                        accidentHour,
+                                                                                                        witnesses,
+                                                                                                        accidentPlace,
+                                                                                                        activityCenter,
+                                                                                                        injuries,
+                                                                                                        injuriesDescription,
+                                                                                                        physicalViolence,
+                                                                                                        verbalViolence,
+                                                                                                        accidentDescription,
+                                                                                                        firstAid,
+                                                                                                        secouristName,
+                                                                                                        medicalConsultation,
+                                                                                                        superiorIsAdvised,
+                                                                                                        superior,
+                                                                                                        superiorAdvisedOn,
+                                                                                                        superiorPostNum,
+                                                                                                        workerPostNum      
+                                                                                                        ]
+                                                                        )
+        
+                res.status(201).json(returnObject) // à voir si on fetch pas la bd à la place.        
 
         }
         catch(error){
@@ -204,4 +244,35 @@ export const WorkingAccidentReport = async (req, res) =>{
                 res.status(500).json({message : 'Erreur du serveur'})
         }
 
+}
+
+
+export const SSD = async (req,res) => {
+        try{
+
+                const {
+                        id,
+                        userID,
+                        firstName,
+                        lastName,
+                        formName,
+
+                        employeeCode,
+                        fonctionWhenHappend,
+                        activityCenter,
+                        incidentDate,
+                        incidentHour,
+                        witnesses,
+                        incidentDescription,
+                        correctionsOrAddOn,
+                        superiorIsAdvised,
+                        superior,
+                        superiorAdvisedOn,
+                        superiorPostNum} = req.body
+
+        }catch(error){
+                console.log(error)
+                res.status(500).json({message : 'Erreur du serveur'})
+
+        }
 }
