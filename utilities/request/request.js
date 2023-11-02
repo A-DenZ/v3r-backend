@@ -139,7 +139,7 @@ export const validateAudiSST = (incidentPlace, incidentDate, incidentHour, EPI, 
 
 }
 
-export const validateIncidentReport = (unitsInvolved,departement,superior,driverLicense) => {
+export const validateIncidentReport = (unitsInvolved,departement,superior,driverLicense,othersVehicules) => {
 
     let isValid = true
     let validStatus = 200
@@ -160,6 +160,10 @@ export const validateIncidentReport = (unitsInvolved,departement,superior,driver
     }
 
     if(!driverLicenseFilter.test(driverLicense) || driverLicense == "" || driverLicense == null){
+        isValid = false
+    }
+
+    if(!othersVehicules == false && !othersVehicules == true){
         isValid = false
     }
 
@@ -275,7 +279,7 @@ export const validateWorkingAccidentReport = (employeeCode,fonctionWhenHappend,a
 
 }
 
-export const validateSSD = (employeeCode,fonctionWhenHappend,activityCenter,incidentDate,incidentHour,witnesses,incidentDescription,correctionsOrAddOn,superiorIsAdvised,superior,superiorAdvisedOn,superiorPostNum) => {
+export const validateSSD = (employeeCode,fonctionWhenHappend,activityCenter,incidentDate,incidentHour,witnesses,incidentDescription,correctionsOrAddOn,superiorIsAdvised,superior,superiorAdvisedOn,superiorPostNum,incidentPlace) => {
 
     let isValid = true
     let validStatus = 200
@@ -291,11 +295,11 @@ export const validateSSD = (employeeCode,fonctionWhenHappend,activityCenter,inci
         isValid = false
     }
 
-    if(!dateFilter.test(incidentDate) || incidentDate == "" || accidentDate == null){
+    if(!dateFilter.test(incidentDate) || incidentDate == "" || incidentDate == null){
         isValid = false
     }
 
-    if(!hourFilter.test(incidentHour) || incidentHour == "" || accidentHour == null){
+    if(!hourFilter.test(incidentHour) || incidentHour == "" || incidentHour == null){
         isValid = false
     }
 
@@ -303,7 +307,7 @@ export const validateSSD = (employeeCode,fonctionWhenHappend,activityCenter,inci
         isValid = false
     }
 
-    if(defaultInputFilter.test(accidentPlace) || accidentPlace == "" || accidentPlace == null){
+    if(defaultInputFilter.test(incidentPlace) || incidentPlace == "" || incidentPlace == null){
         isValid = false
     }
 
