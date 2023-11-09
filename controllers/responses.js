@@ -2,7 +2,7 @@
 import pool from "../config/db.config.js"
 import dotenv from 'dotenv';
 import { validateAudiSST, validateForm , validateIncidentReport , validateWorkingAccidentReport , validateSSD } from "../utilities/request/request.js"
-import { sendMailNotification } from "../utilities/mailjet/mailjet.js"
+import mailSender from "../utilities/mailjet/mailSender.js";
 
 
 export const storeAuditSSTResponse = async (req, res) => {
@@ -80,26 +80,13 @@ export const storeAuditSSTResponse = async (req, res) => {
                                                                ]
                                                            )
 
+                                                           
+
                 const returnFormObject = await pool.query(sqlFetchAllInfos,formID)
 
+                //send mail
+                await mailSender(userID)
                 
-
-                const fetchUserSuperior = "SELECT superior from USER WHERE id = ?"
-                const superiorInfo = "SELECT email, firstName, lastName FROM USER WHERE id = ?"
-                
-                const getSuperiorID = await pool.query(fetchUserSuperior, userID)
-                const storeSuperiorInfo = await pool.query(superiorInfo, getSuperiorID[0][0]?.superior)
-                
-                const superiorName = storeSuperiorInfo?.[0]?.[0]?.firstName + " " + storeSuperiorInfo?.[0]?.[0]?.lastName
-                const superiorEmail = storeSuperiorInfo?.[0]?.[0]?.email
-
-                const adminName = process.env.ADMIN_NAME
-                const adminEmail = process.env.ADMIN_EMAIL
-              
-                // send notification mail
-                if (storeBaseFormQuery && storeAuditSSTQuery ){
-                  sendMailNotification(superiorName, superiorEmail, adminName, adminEmail)
-                }
 
                 res.status(201).json(returnFormObject[0][0]) // à voir si on fetch pas la bd à la place.
     
@@ -165,6 +152,8 @@ export const storeIncidentReportResponse = async (req, res) => {
 
                 const returnFormObject = await pool.query(sqlFetchAllInfos,formID)
 
+                //send mail
+                await mailSender(userID)
 
                 res.status(201).json(returnFormObject[0][0])
 
@@ -258,6 +247,9 @@ export const storeWorkingAccidentReport = async (req, res) => {
                                                                         )
 
                 const returnFormObject = await pool.query(sqlFetchAllInfos,formID)
+
+                //send mail
+                await mailSender(userID)
         
                 res.status(201).json(returnFormObject[0][0]) // à voir si on fetch pas la bd à la place.        
 
@@ -335,6 +327,9 @@ export const storeSSD = async (req,res) => {
                                                       )
 
                 const returnFormObject = await pool.query(sqlFetchAllInfos,formID)
+
+                //send mail
+                await mailSender(userID)
 
                 res.status(201).json(returnFormObject[0][0])
                  
