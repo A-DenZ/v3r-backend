@@ -345,3 +345,33 @@ export const storeSSD = async (req,res) => {
 
         }
 }
+
+
+export const fetchAllResponse = async (req,res) => {
+
+        try{
+
+                const sqlFetchAllIncidentReport = "SELECT * FROM Form INNER JOIN IncidentReport ON Form.id = IncidentReport.formID"
+                const sqlFetchAllSSD = "SELECT * FROM Form INNER JOIN SSD ON Form.id = SSD.formID"
+                const sqlFetchAllWorkingAccident = "SELECT * FROM Form INNER JOIN WorkingAccidentReport ON Form.id = WorkingAccidentReport.formID"
+                const sqlFetchAllAuditSST = "SELECT * FROM Form INNER JOIN AuditSST ON Form.id = AuditSST.formID"
+
+                const storeAllIncidentReport =  await pool.query(sqlFetchAllIncidentReport)
+                const storeAllSSD = await pool.query(sqlFetchAllSSD)
+                const storeAllWorkingAccident = await pool.query(sqlFetchAllWorkingAccident)
+                const storeAllAuditSST = await pool.query(sqlFetchAllAuditSST)
+
+
+
+                const allResponseArray = [storeAllAuditSST?.[0], storeAllWorkingAccident?.[0], storeAllSSD?.[0], storeAllIncidentReport?.[0]]
+
+                console.log(allResponseArray)
+                res.status(201).json(allResponseArray)
+
+        }catch(error){
+                console.log(error)
+                res.status(500).json({message : 'Erreur du serveur'})
+        }
+
+
+}
