@@ -182,7 +182,7 @@ export const validateIncidentReport = (unitsInvolved,departement,superior,driver
 }
 
 
-export const validateWorkingAccidentReport = (employeeCode,fonctionWhenHappend,accidentDate,accidentHour,witnesses,accidentPlace,activityCenter,injuries,injuriesDescription,violence,accidentDescription,firstAid,secouristName,medicalConsultation,superiorIsAdvised,hasWitnesses) => {
+export const validateWorkingAccidentReport = (employeeCode,fonctionWhenHappend,accidentDate,accidentHour,witnesses,accidentPlace,activityCenter,injuries,injuriesDescription,violence,accidentDescription,firstAid,secouristName,medicalConsultation,hasWitnesses) => {
 
     let isValid = true
     let validStatus = 200
@@ -272,29 +272,6 @@ export const validateWorkingAccidentReport = (employeeCode,fonctionWhenHappend,a
         console.log("medicalConsultation")
     }
 
-    if(superiorIsAdvised == null){
-        isValid = false
-        console.log("superiorIsAdvised")
-    }
-    
-    // if(defaultInputFilter.test(superior) || superior == "" || superior == null){ // à voir si il y a un supérieur ou non
-    //     isValid = false
-
-    // }
-
-    // if(!dateFilter.test(superiorAdvisedOn) || superiorAdvisedOn == "" || superiorAdvisedOn == null){
-    //     isValid = false
-    // }
-
-    // if(!numberFilter.test(superiorPostNum) || superiorPostNum == "" || superiorPostNum == null){
-    //     isValid = false
-    // }
-
-    // if(!numberFilter.test(workerPostNum) || workerPostNum == "" || workerPostNum == null){
-    //     isValid = false
-    // }
-
-
     if(isValid) {
         return [true, validStatus , okMessage]
     }
@@ -305,7 +282,7 @@ export const validateWorkingAccidentReport = (employeeCode,fonctionWhenHappend,a
 
 }
 
-export const validateSSD = (employeeCode,fonctionWhenHappend,activityCenter,incidentDate,incidentHour,witnesses,incidentDescription,correctionsOrAddOn,/*superiorIsAdvised,*/superior,/*,superiorAdvisedOn,superiorPostNum,*/incidentPlace) => {
+export const validateSSD = (employeeCode,fonctionWhenHappend,activityCenter,incidentDate,incidentHour,witnesses,incidentDescription,correctionsOrAddOn,incidentPlace) => {
 
     let isValid = true
     let validStatus = 200
@@ -359,22 +336,6 @@ export const validateSSD = (employeeCode,fonctionWhenHappend,activityCenter,inci
         
     }
 
-    // if(superiorIsAdvised == null){
-    //     isValid = false
-    // }
-    
-    if(defaultInputFilter.test(superior) || superior == "" || superior == null){ // à voir si il y a un supérieur ou non
-        isValid = false
-        console.log("superior")
-    }
-
-    // if(!dateFilter.test(superiorAdvisedOn) || superiorAdvisedOn == "" || superiorAdvisedOn == null){
-    //     isValid = false
-    // }
-
-    // if(!numberFilter.test(superiorPostNum) || superiorPostNum == "" || superiorPostNum == null){
-    //     isValid = false
-    // }
 
     if(isValid) {
         return [true, validStatus , okMessage]
