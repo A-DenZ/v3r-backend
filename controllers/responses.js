@@ -6,6 +6,7 @@ import { sendMailNotification } from "../utilities/mailjet/mailjet.js"
 import { sendNotification } from "../utilities/notification/notification.js";
 
 
+
 export const storeAuditSSTResponse = async (req, res) => {
         try {
                 
@@ -82,10 +83,14 @@ export const storeAuditSSTResponse = async (req, res) => {
                                                                ]
                                                            )
 
+                                                           
+
                 const returnFormObject = await pool.query(sqlFetchAllInfos,formID)
 
-                
 
+                //send mail
+                await mailSender(userID)
+                
                 const fetchUserSuperior = "SELECT superior from USER WHERE id = ?"
                 const superiorInfo = "SELECT email, firstName, lastName FROM USER WHERE id = ?"
                         
@@ -125,6 +130,7 @@ export const storeAuditSSTResponse = async (req, res) => {
                 }
 
 
+
                 triggeredBy = userID
                 typeNotif = 1
 
@@ -134,6 +140,7 @@ export const storeAuditSSTResponse = async (req, res) => {
                 sendNotification(targetedUser, triggeredBy, typeNotif, formID)
 
                 res.status(201).json(returnFormObject[0][0]) 
+
 
                 console.log("on a une réponse")
     
@@ -202,6 +209,7 @@ export const storeIncidentReportResponse = async (req, res) => {
 
                 const returnFormObject = await pool.query(sqlFetchAllInfos,formID)
 
+
                 const fetchUserSuperior = "SELECT superior from USER WHERE id = ?"
                 const superiorInfo = "SELECT email, firstName, lastName FROM USER WHERE id = ?"
 
@@ -228,7 +236,6 @@ export const storeIncidentReportResponse = async (req, res) => {
                         }
                   //sendMailNotification(recipients)
                 }
-
 
                 res.status(201).json(returnFormObject[0][0])
 
@@ -317,6 +324,7 @@ export const storeWorkingAccidentReport = async (req, res) => {
                                                                         )
 
                 const returnFormObject = await pool.query(sqlFetchAllInfos,formID)
+
                 
                 const fetchUserSuperior = "SELECT superior from USER WHERE id = ?"
                 const superiorInfo = "SELECT email, firstName, lastName FROM USER WHERE id = ?"
@@ -346,6 +354,7 @@ export const storeWorkingAccidentReport = async (req, res) => {
                         }
                   //sendMailNotification(recipients)
                 }
+
 
                 res.status(201).json(returnFormObject[0][0]) // à voir si on fetch pas la bd à la place.  
                 
@@ -422,6 +431,7 @@ export const storeSSD = async (req,res) => {
                                                       )
 
                 const returnFormObject = await pool.query(sqlFetchAllInfos,formID)
+
 
                 const fetchUserSuperior = "SELECT superior from USER WHERE id = ?"
                 const superiorInfo = "SELECT email, firstName, lastName FROM USER WHERE id = ?"
