@@ -469,22 +469,11 @@ export const fetchAllResponse = async (req,res) => {
 
         try{
 
-                const sqlFetchAllIncidentReport = "SELECT * FROM Form INNER JOIN IncidentReport ON Form.id = IncidentReport.formID"
-                const sqlFetchAllSSD = "SELECT * FROM Form INNER JOIN SSD ON Form.id = SSD.formID"
-                const sqlFetchAllWorkingAccident = "SELECT * FROM Form INNER JOIN WorkingAccidentReport ON Form.id = WorkingAccidentReport.formID"
-                const sqlFetchAllAuditSST = "SELECT * FROM Form INNER JOIN AuditSST ON Form.id = AuditSST.formID"
+                const query = "SELECT * FROM Form LEFT JOIN IncidentReport ON Form.id = IncidentReport.formID LEFT JOIN SSD ON Form.id = SSD.formID LEFT JOIN WorkingAccidentReport ON Form.id = WorkingAccidentReport.formID LEFT JOIN AuditSST ON Form.id = AuditSST.formID"
+                
+                const responses = await pool.query(query)
 
-                const storeAllIncidentReport =  await pool.query(sqlFetchAllIncidentReport)
-                const storeAllSSD = await pool.query(sqlFetchAllSSD)
-                const storeAllWorkingAccident = await pool.query(sqlFetchAllWorkingAccident)
-                const storeAllAuditSST = await pool.query(sqlFetchAllAuditSST)
-
-
-
-                const allResponseArray = [storeAllAuditSST?.[0], storeAllWorkingAccident?.[0], storeAllSSD?.[0], storeAllIncidentReport?.[0]]
-
-                console.log(allResponseArray)
-                res.status(201).json(allResponseArray)
+                res.status(201).json(responses?.[0])
 
         }catch(error){
                 console.log(error)
@@ -492,4 +481,50 @@ export const fetchAllResponse = async (req,res) => {
         }
 
 
+}
+
+
+export const fetchMyResponse = async (req,res) => {
+        try{
+
+                const {userID} = req.body
+
+
+                const sqlFetchMyResponse = "SELECT * FROM Form LEFT JOIN IncidentReport ON Form.id = IncidentReport.formID LEFT JOIN SSD ON Form.id = SSD.formID LEFT JOIN WorkingAccidentReport ON Form.id = WorkingAccidentReport.formID LEFT JOIN AuditSST ON Form.id = AuditSST.formID WHERE Form.userID = ?"
+
+                const myRespones = await pool.query(sqlFetchMyResponse, userID)
+
+                console.log(myRespones)
+                res.status(201).json(myRespones?.[0])
+
+
+        }catch(error){
+
+                console.log(error)
+        }
+}
+
+
+export const fetchEmployeeResponse = async (req,res) => {
+        try{
+
+                const {userID} = req.body
+
+
+                const sqlFetchEmployeeResponse  = "SELECT * FROM Form LEFT JOIN IncidentReport ON Form.id = IncidentReport.formID LEFT JOIN SSD ON Form.id = SSD.formID LEFT JOIN WorkingAccidentReport ON Form.id = WorkingAccidentReport.formID LEFT JOIN AuditSST ON Form.id = AuditSST.formID WHERE Form.userID IN (SELECT id FROM user WHERE superior = ?)"
+
+                const employeeResponses = await pool.query(sqlFetchEmployeeResponse,userID)
+
+
+                console.log(employeeResponses)
+
+                res.status(201).json(employeeResponses?.[0])
+
+
+
+
+
+        }catch(error){
+                console.log(error)
+        }
 }
