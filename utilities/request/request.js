@@ -11,6 +11,7 @@ export const validateForm = (userID,firstName,lastName,formName) => {
     if(!numberFilter.test(userID) || userID == "" || userID == null){ // à ajuster peux-être
         isValid = false
         console.log("userID")
+        console.log(userID)
     }
 
     // PROTECTION CONTRE L'INJECTION SQL ET L'INJECTION DE SCRIPT
@@ -40,7 +41,7 @@ export const validateForm = (userID,firstName,lastName,formName) => {
 
 }
 
-export const validateAudiSST = (incidentPlace, incidentDate, incidentHour, EPI, placeConform, safeComportement, signalytics, signalyticsSheets, workingExcavation, confinedSpace, workingMethod, others, distanceRespected, EPIAreOn, procedureRespect, incidentDescription) => {
+export const validateAudiSST = (incidentPlace, incidentDate, incidentHour, EPI, placeConform, safeComportement, signalytics, signalyticsSheets, workingExcavation, confinedSpace, workingMethod,/* others,*/ distanceRespected, EPIAreOn, procedureRespected, incidentDescription) => {
     let isValid = true
     let validStatus = 200
     let invalidStatus = 400
@@ -117,7 +118,7 @@ export const validateAudiSST = (incidentPlace, incidentDate, incidentHour, EPI, 
         console.log("13", EPIAreOn);
     }
     
-    if (!(procedureRespect === "Conforme" || procedureRespect === "Non conforme" || procedureRespect === "N/A" || procedureRespect === "" || procedureRespect === null)) {
+    if (!(procedureRespected === "Conforme" || procedureRespected === "Non conforme" || procedureRespected === "N/A" || procedureRespected === "" || procedureRespected === null)) {
         isValid = false;
         console.log("14", procedureRespect);
     }
@@ -149,6 +150,7 @@ export const validateIncidentReport = (unitsInvolved,departement,superior,driver
 
     if(!numberFilter.test(unitsInvolved) || unitsInvolved == "" || unitsInvolved == null) {
         isValid = false
+        
     }
 
     if(defaultInputFilter.test(departement) || departement == "" || departement == null){
@@ -163,7 +165,7 @@ export const validateIncidentReport = (unitsInvolved,departement,superior,driver
         isValid = false
     }
 
-    if(!othersVehicules == false && !othersVehicules == true){
+    if(defaultInputFilter.test(othersVehicules) || othersVehicules == "" || othersVehicules == null){
         isValid = false
     }
 
@@ -180,7 +182,7 @@ export const validateIncidentReport = (unitsInvolved,departement,superior,driver
 }
 
 
-export const validateWorkingAccidentReport = (employeeCode,fonctionWhenHappend,accidentDate,accidentHour,witnesses,accidentPlace,activityCenter,injuries,injuriesDescription,physicalViolence,verbalViolence,accidentDescription,firstAid,secouristName,medicalConsultation,superiorIsAdvised,superior,superiorAdvisedOn,superiorPostNum,workerPostNum) => {
+export const validateWorkingAccidentReport = (employeeCode,fonctionWhenHappend,accidentDate,accidentHour,witnesses,accidentPlace,activityCenter,injuries,injuriesDescription,violence,accidentDescription,firstAid,secouristName,medicalConsultation,hasWitnesses) => {
 
     let isValid = true
     let validStatus = 200
@@ -188,86 +190,87 @@ export const validateWorkingAccidentReport = (employeeCode,fonctionWhenHappend,a
     let okMessage = "Le formulaire à été correctement validé.";
     let blockMessage = "Une erreur de saisie bloque l'envoi du formulaire."
 
-    if(defaultInputFilter.test(employeeCode) || employeeCode == "" || fonctionWhenHappend == null){
+    if(defaultInputFilter.test(employeeCode) || employeeCode == "" || employeeCode == null){
         isValid = false
+        console.log("le code d'employer", employeeCode)
+        console.log("employeeCode")
     }
+
+    console.log("avant voici le fonction" , fonctionWhenHappend)
 
     if(defaultInputFilter.test(fonctionWhenHappend) || fonctionWhenHappend == "" || fonctionWhenHappend == null){
         isValid = false
+        console.log("la fonction de l'employer" , fonctionWhenHappend)
+        console.log("fonctionWhenHappend")
     }
 
     if(!dateFilter.test(accidentDate) || accidentDate == "" || accidentDate == null){
         isValid = false
+        console.log("accidentDate")
     }
 
     if(!hourFilter.test(accidentHour) || accidentHour == "" || accidentHour == null){
         isValid = false
+        console.log("accidentHour")
     }
 
-    if(defaultInputFilter.test(witnesses) || witnesses == "" || witnesses == null){
+    if(defaultInputFilter.test(witnesses) || witnesses == null){
         isValid = false
+        console.log("witnesses")
+    }
+
+    if(defaultInputFilter.test(hasWitnesses) || hasWitnesses == "" || hasWitnesses == null){
+        isValid = false
+        console.log("hasWitnesses")
+        console.log("hasWitnesses" , hasWitnesses)
     }
 
     if(defaultInputFilter.test(accidentPlace) || accidentPlace == "" || accidentPlace == null){
         isValid = false
+        console.log("accidentPlace")
     }
 
     if(defaultInputFilter.test(activityCenter) || activityCenter == "" || activityCenter == null){
         isValid = false
+        console.log("le centre d'activité" , activityCenter)
+        console.log("activityCenter")
     }
 
     if(defaultInputFilter.test(injuries) || injuries == "" || injuries == null){
         isValid = false
+        console.log("injuries")
     }
 
     if(defaultInputFilter.test(injuriesDescription) || injuriesDescription == "" || injuriesDescription == null){
         isValid = false
+        console.log("injuriesDescription")
     }
 
-    if(physicalViolence == null){
+    if(defaultInputFilter.test(violence) || violence == "" || violence == null){
         isValid = false
-    }
-
-    if(verbalViolence == null){
-        isValid = false
+        console.log("violence")
     }
 
     if(defaultInputFilter.test(accidentDescription) || accidentDescription == "" || accidentDescription == null){
         isValid = false
+        console.log("accidentDescription")
     }
 
     if(defaultInputFilter.test(firstAid) || firstAid == "" || firstAid == null){
         isValid = false
+        console.log("firstAid")
+        
     }
 
     if(defaultInputFilter.test(secouristName) || secouristName == "" || secouristName == null){
         isValid = false
+        console.log("secouristName")
     }
 
     if(medicalConsultation == null){
         isValid = false
+        console.log("medicalConsultation")
     }
-
-    if(superiorIsAdvised == null){
-        isValid = false
-    }
-    
-    if(defaultInputFilter.test(superior) || superior == "" || superior == null){ // à voir si il y a un supérieur ou non
-        isValid = false
-    }
-
-    if(!dateFilter.test(superiorAdvisedOn) || superiorAdvisedOn == "" || superiorAdvisedOn == null){
-        isValid = false
-    }
-
-    if(!numberFilter.test(superiorPostNum) || superiorPostNum == "" || superiorPostNum == null){
-        isValid = false
-    }
-
-    if(!numberFilter.test(workerPostNum) || workerPostNum == "" || workerPostNum == null){
-        isValid = false
-    }
-
 
     if(isValid) {
         return [true, validStatus , okMessage]
@@ -279,7 +282,7 @@ export const validateWorkingAccidentReport = (employeeCode,fonctionWhenHappend,a
 
 }
 
-export const validateSSD = (employeeCode,fonctionWhenHappend,activityCenter,incidentDate,incidentHour,witnesses,incidentDescription,correctionsOrAddOn,superiorIsAdvised,superior,superiorAdvisedOn,superiorPostNum,incidentPlace) => {
+export const validateSSD = (employeeCode,fonctionWhenHappend,activityCenter,incidentDate,incidentHour,witnesses,incidentDescription,correctionsOrAddOn,incidentPlace) => {
 
     let isValid = true
     let validStatus = 200
@@ -289,55 +292,50 @@ export const validateSSD = (employeeCode,fonctionWhenHappend,activityCenter,inci
 
     if(defaultInputFilter.test(employeeCode) || employeeCode == "" || fonctionWhenHappend == null){
         isValid = false
+        console.log("employeeCode")
     }
 
     if(defaultInputFilter.test(fonctionWhenHappend) || fonctionWhenHappend == "" || fonctionWhenHappend == null){
         isValid = false
+        console.log("fonctionWhenHappen")
     }
 
     if(!dateFilter.test(incidentDate) || incidentDate == "" || incidentDate == null){
         isValid = false
+        console.log("incidentDate")
     }
 
     if(!hourFilter.test(incidentHour) || incidentHour == "" || incidentHour == null){
         isValid = false
+        console.log("incidentHour")
     }
 
     if(defaultInputFilter.test(witnesses) || witnesses == "" || witnesses == null){
         isValid = false
+        console.log("witnesses")
     }
 
     if(defaultInputFilter.test(incidentPlace) || incidentPlace == "" || incidentPlace == null){
         isValid = false
+        console.log("incidentPlace")
     }
 
     if(defaultInputFilter.test(activityCenter) || activityCenter == "" || activityCenter == null){
         isValid = false
+        console.log("activityCenter")
     }
 
     if(defaultInputFilter.test(incidentDescription) || incidentDescription == "" || incidentDescription == null){
         isValid = false
+        console.log("incidentDescription")
     }
 
     if(defaultInputFilter.test(correctionsOrAddOn) || correctionsOrAddOn == "" || correctionsOrAddOn == null){
         isValid = false
+        console.log("correctionsOrAddOn")
+        
     }
 
-    if(superiorIsAdvised == null){
-        isValid = false
-    }
-    
-    if(defaultInputFilter.test(superior) || superior == "" || superior == null){ // à voir si il y a un supérieur ou non
-        isValid = false
-    }
-
-    if(!dateFilter.test(superiorAdvisedOn) || superiorAdvisedOn == "" || superiorAdvisedOn == null){
-        isValid = false
-    }
-
-    if(!numberFilter.test(superiorPostNum) || superiorPostNum == "" || superiorPostNum == null){
-        isValid = false
-    }
 
     if(isValid) {
         return [true, validStatus , okMessage]

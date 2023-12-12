@@ -2,9 +2,8 @@ import Mailjet from "node-mailjet"
 import { emailTemplate } from '../template/emailTemplate.js'
 
 
-export const sendMailNotification = async (firstName, firstEmail, secondName , secondEmail) => {
+export const sendMailNotification = async (recipients) => {
   
-  const recipients = [{ Email: firstEmail, Name: firstName }, { Email: secondEmail, Name: secondName }]
 
   // mailjet connexion
   const mailjet = Mailjet.apiConnect(
