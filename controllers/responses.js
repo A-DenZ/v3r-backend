@@ -479,15 +479,21 @@ export const fetchAllResponse = async (req,res) => {
 
         try{
 
-                const query = "SELECT * FROM Form LEFT JOIN IncidentReport ON Form.id = IncidentReport.formID LEFT JOIN SSD ON Form.id = SSD.formID LEFT JOIN WorkingAccidentReport ON Form.id = WorkingAccidentReport.formID LEFT JOIN AuditSST ON Form.id = AuditSST.formID"
-                
-                const responses = await pool.query(query)
+                const sstQuery = "SELECT * FROM Form INNER JOIN SSD ON Form.id = SSD.formID"
+                const incidentQuery = "SELECT * FROM Form INNER JOIN IncidentReport ON Form.id = IncidentReport.formID"
+                const workingAccidentQuery = "SELECT * FROM Form INNER JOIN WorkingAccidentReport ON Form.id = WorkingAccidentReport.formID"
+                const auditSSTQuery = "SELECT * FROM Form INNER JOIN AuditSST ON Form.id = AuditSST.formID"
+
+                const sstResponse = await pool.query(sstQuery)
+                const incidentResponse = await pool.query(incidentQuery)
+                const workingAccidentResponse = await pool.query(workingAccidentQuery)
+                const auditSSTResponse = await pool.query(auditSSTQuery)
+
+                const responses = [...sstResponse?.[0], ...incidentResponse?.[0], ...workingAccidentResponse?.[0], ...auditSSTResponse?.[0]]
 
                 console.log(responses)
-
-
-                res.status(201).json(responses?.[0])
-
+                
+                res.status(201).json(responses)
         }catch(error){
                 console.log(error)
                 res.status(500).json({message : 'Erreur du serveur'})       
