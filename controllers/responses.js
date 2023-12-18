@@ -479,12 +479,21 @@ export const fetchAllResponse = async (req,res) => {
 
         try{
 
-                const query = "SELECT * FROM Form LEFT JOIN IncidentReport ON Form.id = IncidentReport.formID LEFT JOIN SSD ON Form.id = SSD.formID LEFT JOIN WorkingAccidentReport ON Form.id = WorkingAccidentReport.formID LEFT JOIN AuditSST ON Form.id = AuditSST.formID"
+                const sstQuery = "SELECT * FROM Form INNER JOIN SSD ON Form.id = SSD.formID"
+                const incidentQuery = "SELECT * FROM Form INNER JOIN IncidentReport ON Form.id = IncidentReport.formID"
+                const workingAccidentQuery = "SELECT * FROM Form INNER JOIN WorkingAccidentReport ON Form.id = WorkingAccidentReport.formID"
+                const auditSSTQuery = "SELECT * FROM Form INNER JOIN AuditSST ON Form.id = AuditSST.formID"
+
+                const sstResponse = await pool.query(sstQuery)
+                const incidentResponse = await pool.query(incidentQuery)
+                const workingAccidentResponse = await pool.query(workingAccidentQuery)
+                const auditSSTResponse = await pool.query(auditSSTQuery)
+
+                const responses = [...sstResponse?.[0], ...incidentResponse?.[0], ...workingAccidentResponse?.[0], ...auditSSTResponse?.[0]]
+
+                console.log(responses)
                 
-                const responses = await pool.query(query)
-
-                res.status(201).json(responses?.[0])
-
+                res.status(201).json(responses)
         }catch(error){
                 console.log(error)
                 res.status(500).json({message : 'Erreur du serveur'})       
@@ -520,7 +529,6 @@ export const fetchEmployeeResponse = async (req,res) => {
 
                 const {userID} = req.body
 
-
                 const sqlFetchEmployeeResponse  = "SELECT * FROM Form LEFT JOIN IncidentReport ON Form.id = IncidentReport.formID LEFT JOIN SSD ON Form.id = SSD.formID LEFT JOIN WorkingAccidentReport ON Form.id = WorkingAccidentReport.formID LEFT JOIN AuditSST ON Form.id = AuditSST.formID WHERE Form.userID IN (SELECT id FROM user WHERE superior = ?)"
 
                 const employeeResponses = await pool.query(sqlFetchEmployeeResponse,userID)
@@ -530,9 +538,113 @@ export const fetchEmployeeResponse = async (req,res) => {
 
                 res.status(201).json(employeeResponses?.[0])
 
+        }catch(error){
+                console.log(error)
+        }
+}
+
+export const updateReadStatus = async (req,res) => {
+
+        try{
+                let Today = new Date()
+
+                const { id,
+                        userID,
+                        accessLevel} = req.body
+
+                if(accessLevel === 2) {
+
+                        const sqlUpdateReadStatusSupervisor = "UPDATE Form SET isReadSupervisor = true, readBySupervisor = ?, readOnSupervisor = ? WHERE id = ?"
+
+                        const updateReadStatusSupervisor = await pool.query(sqlUpdateReadStatusSupervisor,[userID,Today,id])
+                }
+                
+                if (accessLevel === 3){
+
+                        const sqlUpdateReadStatusAdmin = "UPDATE Form SET isReadAdmin = true, readByAdmin = ?, readOnAdmin = ? WHERE id = ?"
+
+                        const updateReadStatusAdmin = await pool.query(sqlUpdateReadStatusAdmin,[userID,Today,id])
+                }
 
 
+                const fetchUserSuperior = "SELECT superior from USER WHERE id = ?"
+                const superiorInfo = "SELECT email, firstName, lastName FROM USER WHERE id = ?"
+                
 
+                let superiorEmail, superiorName 
+
+                const adminName = process.env.ADMIN_NAME
+                const adminEmail = process.env.ADMIN_EMAIL
+
+                const getSuperiorID = await pool.query(fetchUserSuperior, userID)
+                console.log("iciiiii" , getSuperiorID[0][0]?.superior)
+                if(getSuperiorID[0][0]?.superior){
+                        const storeSuperiorInfo = await pool.query(superiorInfo, getSuperiorID[0][0]?.superior)
+
+                        superiorName = storeSuperiorInfo?.[0]?.[0]?.firstName + " " + storeSuperiorInfo?.[0]?.[0]?.lastName
+                        superiorEmail = storeSuperiorInfo?.[0]?.[0]?.email
+                }
+
+
+                // send notification mail
+                const recipients = [{ Email: adminEmail, Name: adminName }]
+                if(getSuperiorID[0][0]?.superior){
+                        recipients.push({ Email: superiorEmail, Name: superiorName })
+                }
+                //sendMailNotification(recipients)
+
+
+                let targetedUser, triggeredBy, typeNotif
+
+                if(getSuperiorID[0][0]?.superior){
+                        targetedUser = getSuperiorID[0][0]?.superior
+                }
+
+
+                triggeredBy = userID
+                typeNotif = 2
+                
+                sendNotification(targetedUser, triggeredBy, typeNotif, formID)
+
+                const sqlFetchForm = "SELECT * FROM Form WHERE id = ? LIMIT 1"
+
+                const form = await pool.query(sqlFetchForm,id)
+
+                res.status(201).json(form?.[0])
+
+        }catch(error){
+                console.log(error)
+        }
+}
+
+export const updateOpenedStatus = async (req,res) => {
+
+        try{
+                let Today = new Date()
+
+                const { id,
+                        userID,
+                        accessLevel} = req.body
+
+                if(accessLevel === 2) {
+
+                        const sqlUpdateOpenedStatusSupervisor = "UPDATE Form SET isOpenSupervisor = true, openedBySupervisor = ?, openendOnSupervisor = ? WHERE id = ?"
+
+                        const updateOpenedStatus = await pool.query(sqlUpdateOpenedStatusSupervisor,[userID,Today,id])
+                }
+                
+                if (accessLevel === 3){
+
+                        const sqlUpdateOpenedStatusAdmin = "UPDATE Form SET isOpenAdmin = true, openedByAdmin = ?, openendOnAdmin = ? WHERE id = ?"
+
+                        const updateOpenedStatus = await pool.query(sqlUpdateOpenedStatusAdmin,[userID,Today,id])
+                }
+
+                const sqlFetchForm = "SELECT * FROM Form WHERE id = ? LIMIT 1"
+
+                const form = await pool.query(sqlFetchForm,id)
+
+                res.status(201).json(form?.[0])
 
         }catch(error){
                 console.log(error)
