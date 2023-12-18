@@ -36,21 +36,23 @@ export const updateOpenedOn = async (req,res) => {
 }
 
 
+
 export const fetchAllNotificationByUser = async (req,res) => {
     try{
         
-
         const { userID } = req.params
 
         const sqlAllNotifGoodInfoQuery = `SELECT n.id AS NotificationID, CONCAT(tb.firstName, ' ', tb.lastName) AS TriggeredByName, CONCAT(tu.firstName, ' ', tu.lastName) AS TargetedUserName, CONCAT(nf.firstName, ' ', nf.lastName) AS ForUser, n.type, n.formID, n.isOpened FROM Notification AS n INNER JOIN User AS tb ON n.triggeredBy = tb.id INNER JOIN User AS tu ON n.targetedUser = tu.id LEFT JOIN Form AS nf ON n.formID = nf.id WHERE tb.id = ?;`;
         const storeAllGoodInfoQuery = await pool.query(sqlAllNotifGoodInfoQuery , userID)
         
         res.status(201).json(storeAllGoodInfoQuery[0])
-
-    }catch(error){
-
+      
+        } catch (error) {
+        console.error("Error in fetchAllNotification:", error)
+        res.status(500).json({ error: "Internal Server Error" })
     }
-}
+  }
+
 
 
 export const createNotifAfterApproved = async (req,res) => {
@@ -66,8 +68,6 @@ export const createNotifAfterApproved = async (req,res) => {
         let triggeredBy = userID
 
         sendNotification(targetedUser, triggeredBy, typeNotif, formID)
-
-
 
     }catch(error){
 
