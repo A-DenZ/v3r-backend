@@ -3,6 +3,9 @@ import pool from "../config/db.config.js"
 import dotenv from 'dotenv';
 import { validateAudiSST, validateForm , validateIncidentReport , validateWorkingAccidentReport , validateSSD } from "../utilities/request/request.js"
 import { sendMailNotification } from "../utilities/mailjet/mailjet.js"
+
+import  mailSender  from "../utilities/mailjet/mailSender.js" //?
+
 import { sendNotification } from "../utilities/notification/notification.js";
 
 
