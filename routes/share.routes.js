@@ -1,9 +1,14 @@
 import express from 'express'
-import { storeSharedLink, fetchAllSharedLink }  from '../controllers/share.js'
+import { fetchSharedDocuments, createSharedDocument, deleteDocument, updateDocument }  from '../controllers/share.js'
 
 const router = express.Router()
 
-router.post('/link', storeSharedLink)
-router.get('/fetchallsharedlink', fetchAllSharedLink)
+router.post('/new', createSharedDocument)
+
+router.get('/', fetchSharedDocuments)
+
+router.delete('/:id', deleteDocument)
+
+router.put('/', updateDocument)
 
 export default router

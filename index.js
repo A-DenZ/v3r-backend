@@ -6,6 +6,7 @@ import userRoutes from './routes/user.routes.js';
 import responseRoutes from './routes/response.routes.js';
 import notificationRoutes from './routes/notification.routes.js';
 import shareRoutes from './routes/share.routes.js'
+import departmentRoutes from './routes/departments.routes.js'
 
 
 dotenv.config();
@@ -22,7 +23,8 @@ app.use(cors());
 app.use('/notification', notificationRoutes)
 app.use('/user' , userRoutes);
 app.use('/response', responseRoutes);
-app.use('/share', shareRoutes);
+app.use('/documents', shareRoutes);
+app.use('/departments', departmentRoutes)
 
 
 
