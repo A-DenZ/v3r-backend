@@ -8,6 +8,7 @@ const fetchDocumentById = 'SELECT sd.id, sd.title AS title, sd.link AS link, JSO
 export const createSharedDocument = async (req, res) => {
     const { title, link, departments } = req.body
 
+
     try {
         const insertDoc = 'INSERT INTO sharedDocument (title, link) VALUES (?, ?)'
         const joinDocToDep = 'INSERT INTO sharedDocument_department (docId, depId) VALUES (?, ?)'
@@ -31,6 +32,7 @@ export const createSharedDocument = async (req, res) => {
         await Promise.all(departmentInsertions)
 
         const newDoc = await pool.query(fetchDocumentById, [docId])
+
 
         if (newDoc?.[0]?.length === 0) throw new Error('Erreur back-end')
 
@@ -61,6 +63,7 @@ export const deleteDocument = async (req, res) => {
         
         await pool.query(deleteDocDepartmentRelations, [id])
         await pool.query(deleteDocument, [id])
+
 
         res.status(200).json(id)
     } catch (error) {

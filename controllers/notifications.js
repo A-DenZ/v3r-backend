@@ -42,8 +42,11 @@ export const fetchAllNotificationByUser = async (req,res) => {
         
         const { userID } = req.params
 
-        const sqlAllNotifGoodInfoQuery = `SELECT n.id AS NotificationID, CONCAT(tb.firstName, ' ', tb.lastName) AS TriggeredByName, CONCAT(tu.firstName, ' ', tu.lastName) AS TargetedUserName, CONCAT(nf.firstName, ' ', nf.lastName) AS ForUser, n.type, n.formID, n.isOpened FROM Notification AS n INNER JOIN User AS tb ON n.triggeredBy = tb.id INNER JOIN User AS tu ON n.targetedUser = tu.id LEFT JOIN Form AS nf ON n.formID = nf.id WHERE tb.id = ?;`;
+        const sqlAllNotifGoodInfoQuery = `SELECT n.id AS NotificationID, CONCAT(tb.firstName, ' ', tb.lastName) AS triggeredBy, CONCAT(tu.firstName, ' ', tu.lastName) AS TargetedUserName, CONCAT(nf.firstName, ' ', nf.lastName) AS forUser, n.type, n.formID, n.isOpened FROM Notification AS n INNER JOIN User AS tb ON n.triggeredBy = tb.id INNER JOIN User AS tu ON n.targetedUser = tu.id LEFT JOIN Form AS nf ON n.formID = nf.id WHERE tb.id = ?;`;
         const storeAllGoodInfoQuery = await pool.query(sqlAllNotifGoodInfoQuery , userID)
+
+        console.log('UserID:', userID);
+        console.log('SQL Query:', sqlAllNotifGoodInfoQuery);
         
         res.status(201).json(storeAllGoodInfoQuery[0])
       
