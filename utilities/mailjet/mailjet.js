@@ -26,6 +26,7 @@ export const sendMailNotification = async (recipients) => {
                 },
 
                 To: recipients,
+                
 
                 Subject: 'Nouveau formulaire SST',
                 HtmlPart: emailTemplate()
