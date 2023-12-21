@@ -2,6 +2,7 @@ import pool from "../config/db.config.js"
 import { sendNotification } from "../utilities/notification/notification.js"
 
 
+
 export const updateOpenedOn = async (req,res) => {
 
     try{

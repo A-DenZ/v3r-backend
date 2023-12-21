@@ -1,15 +1,10 @@
 
-import pool from '../config/db.config.js'
-import dotenv from 'dotenv'
-import {
-    validateAudiSST,
-    validateForm,
-    validateIncidentReport,
-    validateWorkingAccidentReport,
-    validateSSD,
-} from '../utilities/request/request.js'
-import { sendMailNotification } from '../utilities/mailjet/mailjet.js'
-import { sendNotification } from '../utilities/notification/notification.js'
+
+import pool from "../config/db.config.js"
+import dotenv from 'dotenv';
+import { validateAudiSST, validateForm , validateIncidentReport , validateWorkingAccidentReport , validateSSD } from "../utilities/request/request.js"
+import { sendMailNotification } from "../utilities/mailjet/mailjet.js"
+import { sendNotification } from "../utilities/notification/notification.js";
 
 
 export const storeAuditSSTResponse = async (req, res) => {
@@ -133,7 +128,119 @@ export const storeAuditSSTResponse = async (req, res) => {
             //sendMailNotification(recipients)
         }
 
+
+export const storeWorkingAccidentReport = async (req, res) => {
+
+        try{
+                const { userID,
+                        firstName,
+                        lastName,
+                        formName,
+
+                        employeeCode,
+                        fonctionWhenHappend,
+                        accidentDate,
+                        accidentHour,
+                        hasWitnesses,
+                        witnesses,
+                        accidentPlace,
+                        activityCenter,
+                        injuries,
+                        injuriesDescription,
+                        violence,
+                        accidentDescription,
+                        firstAid,
+                        secouristName,
+                        medicalConsultation } = req.body
+
+                        console.log("le body" , req.body)
+                
+                const storeValidForm = validateForm(userID,firstName,lastName,formName)
+                const storeValidWorkingAccidentReport = validateWorkingAccidentReport(employeeCode,fonctionWhenHappend,accidentDate,accidentHour,witnesses,accidentPlace,activityCenter,injuries,injuriesDescription,violence,accidentDescription,firstAid,secouristName,medicalConsultation,hasWitnesses)
+                
+
+                if(!storeValidForm?.[0]) console.log(storeValidForm?.[2])
+                if(!storeValidForm?.[0]) return res.status(storeValidForm?.[1]).json({message: storeValidForm?.[2]})
+                if(!storeValidWorkingAccidentReport?.[0]) console.log("2ième validation : " , storeValidWorkingAccidentReport?.[2])
+                if(!storeValidWorkingAccidentReport?.[0]) return res.status(storeValidWorkingAccidentReport?.[1]).json({ message: storeValidWorkingAccidentReport?.[2] })
+                
+
+                const sqlInsertBaseForm = "INSERT INTO Form (userID,firstName,lastName,formName) VALUES (?,?,?,?)"
+                const sqlInsertWorkingAccidentReport = "INSERT INTO WorkingAccidentReport (formID,employeeCode,fonctionWhenHappend,accidentDate,accidentHour,witnesses,accidentPlace,activityCenter,injuries,injuriesDescription,violence,accidentDescription,firstAid,secouristName,medicalConsultation,hasWitnesses) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)" 
+                const sqlFetchForm = "SELECT id FROM form WHERE userID = ? AND firstName = ? AND lastName = ? AND formName = ? ORDER BY id DESC LIMIT 1"
+                const sqlFetchAllInfos = "SELECT * FROM Form JOIN WorkingAccidentReport ON Form.id = WorkingAccidentReport.formID WHERE Form.id = ? LIMIT 1"
+                
+
+                const storeBaseFormQuery = await pool.query(sqlInsertBaseForm, [
+                                                                                userID,
+                                                                                firstName,
+                                                                                lastName,
+                                                                                formName
+                                                                                ]
+                                                        )
+
+                const formIDFetch = await pool.query(sqlFetchForm, [userID, firstName, lastName, formName])
+
+                let formID = formIDFetch[0]?.[0]?.id
+
+                const storeWorkingAccidentReportQuery = await pool.query(sqlInsertWorkingAccidentReport, [
+                                                                                                        formID,
+                                                                                                        employeeCode,
+                                                                                                        fonctionWhenHappend,
+                                                                                                        accidentDate,
+                                                                                                        accidentHour,
+                                                                                                        witnesses,
+                                                                                                        accidentPlace,
+                                                                                                        activityCenter,
+                                                                                                        injuries,
+                                                                                                        injuriesDescription,
+                                                                                                        violence,
+                                                                                                        accidentDescription,
+                                                                                                        firstAid,
+                                                                                                        secouristName,
+                                                                                                        medicalConsultation,
+                                                                                                        hasWitnesses      
+                                                                                                        ]
+                                                                        )
+
+                const returnFormObject = await pool.query(sqlFetchAllInfos,formID)
+                
+                const fetchUserSuperior = "SELECT superior from USER WHERE id = ?"
+                const superiorInfo = "SELECT email, firstName, lastName FROM USER WHERE id = ?"
+                
+                let superiorEmail, superiorName 
+
+                const adminName = process.env.ADMIN_NAME
+                const adminEmail = process.env.ADMIN_EMAIL
+
+                const getSuperiorID = await pool.query(fetchUserSuperior, userID)
+                console.log("iciiiii" , getSuperiorID[0][0]?.superior)
+                if(getSuperiorID[0][0]?.superior){
+                        const storeSuperiorInfo = await pool.query(superiorInfo, getSuperiorID[0][0]?.superior)
+
+                        superiorName = storeSuperiorInfo?.[0]?.[0]?.firstName + " " + storeSuperiorInfo?.[0]?.[0]?.lastName
+                        superiorEmail = storeSuperiorInfo?.[0]?.[0]?.email
+                }
+
+
+              
+
+                // send notification mail
+                if (storeBaseFormQuery && storeWorkingAccidentReportQuery ){
+                        const recipients = [{ Email: adminEmail, Name: adminName }]
+                        if(getSuperiorID[0][0]?.superior){
+                                recipients.push({ Email: superiorEmail, Name: superiorName })
+                        }
+                  //sendMailNotification(recipients)
+                }
+
+                res.status(201).json(returnFormObject[0][0]) 
+                // à voir si on fetch pas la bd à la place.  
+                
+                console.log("on a une réponse")
+
         let targetedUser, triggeredBy, typeNotif
+
 
         if (getSuperiorID[0][0]?.superior) {
             targetedUser = getSuperiorID[0][0]?.superior
@@ -243,130 +350,6 @@ export const storeIncidentReportResponse = async (req, res) => {
     }
 }
 
-export const storeWorkingAccidentReport = async (req, res) => {
-    try {
-        const {
-            userID,
-            firstName,
-            lastName,
-            formName,
-
-            employeeCode,
-            fonctionWhenHappend,
-            accidentDate,
-            accidentHour,
-            hasWitnesses,
-            witnesses,
-            accidentPlace,
-            activityCenter,
-            injuries,
-            injuriesDescription,
-            violence,
-            accidentDescription,
-            firstAid,
-            secouristName,
-            medicalConsultation,
-        } = req.body
-
-        console.log('le body', req.body)
-
-        const storeValidForm = validateForm(userID, firstName, lastName, formName)
-        const storeValidWorkingAccidentReport = validateWorkingAccidentReport(
-            employeeCode,
-            fonctionWhenHappend,
-            accidentDate,
-            accidentHour,
-            witnesses,
-            accidentPlace,
-            activityCenter,
-            injuries,
-            injuriesDescription,
-            violence,
-            accidentDescription,
-            firstAid,
-            secouristName,
-            medicalConsultation,
-            hasWitnesses
-        )
-
-        if (!storeValidForm?.[0]) console.log(storeValidForm?.[2])
-        if (!storeValidForm?.[0]) return res.status(storeValidForm?.[1]).json({ message: storeValidForm?.[2] })
-        if (!storeValidWorkingAccidentReport?.[0])
-            console.log('2ième validation : ', storeValidWorkingAccidentReport?.[2])
-        if (!storeValidWorkingAccidentReport?.[0])
-            return res
-                .status(storeValidWorkingAccidentReport?.[1])
-                .json({ message: storeValidWorkingAccidentReport?.[2] })
-
-        const sqlInsertBaseForm = 'INSERT INTO Form (userID,firstName,lastName,formName) VALUES (?,?,?,?)'
-        const sqlInsertWorkingAccidentReport =
-            'INSERT INTO WorkingAccidentReport (formID,employeeCode,fonctionWhenHappend,accidentDate,accidentHour,witnesses,accidentPlace,activityCenter,injuries,injuriesDescription,violence,accidentDescription,firstAid,secouristName,medicalConsultation,hasWitnesses) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
-        const sqlFetchForm =
-            'SELECT id FROM form WHERE userID = ? AND firstName = ? AND lastName = ? AND formName = ? ORDER BY id DESC LIMIT 1'
-        const sqlFetchAllInfos =
-            'SELECT * FROM Form JOIN WorkingAccidentReport ON Form.id = WorkingAccidentReport.formID WHERE Form.id = ? LIMIT 1'
-
-        const storeBaseFormQuery = await pool.query(sqlInsertBaseForm, [userID, firstName, lastName, formName])
-
-        const formIDFetch = await pool.query(sqlFetchForm, [userID, firstName, lastName, formName])
-
-        let formID = formIDFetch[0]?.[0]?.id
-
-        const storeWorkingAccidentReportQuery = await pool.query(sqlInsertWorkingAccidentReport, [
-            formID,
-            employeeCode,
-            fonctionWhenHappend,
-            accidentDate,
-            accidentHour,
-            witnesses,
-            accidentPlace,
-            activityCenter,
-            injuries,
-            injuriesDescription,
-            violence,
-            accidentDescription,
-            firstAid,
-            secouristName,
-            medicalConsultation,
-            hasWitnesses,
-        ])
-
-        const returnFormObject = await pool.query(sqlFetchAllInfos, formID)
-
-        const fetchUserSuperior = 'SELECT superior from USER WHERE id = ?'
-        const superiorInfo = 'SELECT email, firstName, lastName FROM USER WHERE id = ?'
-
-        let superiorEmail, superiorName
-
-        const adminName = process.env.ADMIN_NAME
-        const adminEmail = process.env.ADMIN_EMAIL
-
-        const getSuperiorID = await pool.query(fetchUserSuperior, userID)
-        console.log('iciiiii', getSuperiorID[0][0]?.superior)
-        if (getSuperiorID[0][0]?.superior) {
-            const storeSuperiorInfo = await pool.query(superiorInfo, getSuperiorID[0][0]?.superior)
-
-            superiorName = storeSuperiorInfo?.[0]?.[0]?.firstName + ' ' + storeSuperiorInfo?.[0]?.[0]?.lastName
-            superiorEmail = storeSuperiorInfo?.[0]?.[0]?.email
-        }
-
-        // send notification mail
-        if (storeBaseFormQuery && storeWorkingAccidentReportQuery) {
-            const recipients = [{ Email: adminEmail, Name: adminName }]
-            if (getSuperiorID[0][0]?.superior) {
-                recipients.push({ Email: superiorEmail, Name: superiorName })
-            }
-            //sendMailNotification(recipients)
-        }
-
-        res.status(201).json(returnFormObject[0][0]) // à voir si on fetch pas la bd à la place.
-
-        console.log('on a une réponse')
-    } catch (error) {
-        console.log(error)
-        res.status(500).json({ message: 'Erreur du serveur' })
-    }
-}
 
 export const storeSSD = async (req, res) => {
     try {
@@ -593,7 +576,6 @@ export const updateReadStatus = async (req, res) => {
             superiorName = storeSuperiorInfo?.[0]?.[0]?.firstName + ' ' + storeSuperiorInfo?.[0]?.[0]?.lastName
             superiorEmail = storeSuperiorInfo?.[0]?.[0]?.email
         }
-
         // send notification mail
         const recipients = [{ Email: adminEmail, Name: adminName }]
         console.log(getSuperiorID[0][0]?.superior)
@@ -622,3 +604,4 @@ export const updateReadStatus = async (req, res) => {
         console.log(error)
     }
 }
+
