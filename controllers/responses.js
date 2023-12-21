@@ -101,8 +101,10 @@ export const storeAuditSSTResponse = async (req, res) => {
 
         const returnFormObject = await pool.query(sqlFetchAllInfos, formID)
 
-        //send mail
-        await mailSender(userID)
+        // send mail
+        console.log('pass 1')
+       // await mailSender(userID)
+        console.log('pass2')
 
         const fetchUserSuperior = 'SELECT superior from USER WHERE id = ?'
         const superiorInfo = 'SELECT email, firstName, lastName FROM USER WHERE id = ?'
@@ -130,7 +132,8 @@ export const storeAuditSSTResponse = async (req, res) => {
             if (getSuperiorID[0][0]?.superior) {
                 recipients.push({ Email: superiorEmail, Name: superiorName })
             }
-            //sendMailNotification(recipients)
+            sendMailNotification(recipients)
+            console.log(recipients)
         }
 
         let targetedUser, triggeredBy, typeNotif
@@ -143,6 +146,7 @@ export const storeAuditSSTResponse = async (req, res) => {
         typeNotif = 1
 
         sendNotification(targetedUser, triggeredBy, typeNotif, formID)
+
 
         res.status(201).json(returnFormObject[0][0])
 
@@ -356,8 +360,19 @@ export const storeWorkingAccidentReport = async (req, res) => {
             if (getSuperiorID[0][0]?.superior) {
                 recipients.push({ Email: superiorEmail, Name: superiorName })
             }
-            //sendMailNotification(recipients)
+            sendMailNotification(recipients)
         }
+
+        let targetedUser, triggeredBy, typeNotif
+
+        if (getSuperiorID[0][0]?.superior) {
+            targetedUser = getSuperiorID[0][0]?.superior
+        }
+
+        triggeredBy = userID
+        typeNotif = 1
+
+        sendNotification(targetedUser, triggeredBy, typeNotif, formID)
 
         res.status(201).json(returnFormObject[0][0]) // à voir si on fetch pas la bd à la place.
 
@@ -609,7 +624,7 @@ export const updateReadStatus = async (req, res) => {
         }
 
         triggeredBy = userID
-        typeNotif = 2
+        typeNotif = 1
 
         sendNotification(targetedUser, triggeredBy, typeNotif, id)
 
