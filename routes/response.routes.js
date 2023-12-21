@@ -9,8 +9,8 @@ router.post('/workingaccidentreport' , storeWorkingAccidentReport);
 router.post('/ssd' , storeSSD);
 
 router.get('/fetchallresponse', fetchAllResponse)
-router.get('/fetchmyresponse', fetchMyResponse)
-router.get('/fetchemployeeresponse', fetchEmployeeResponse)
+router.get('/fetchmyresponse/:userID', fetchMyResponse)
+router.get('/fetchemployeeresponse/:userID', fetchEmployeeResponse)
 
 router.patch('/updateread', updateReadStatus)
 
