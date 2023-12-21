@@ -2,6 +2,7 @@ import pool from "../config/db.config.js"
 import { sendNotification } from "../utilities/notification/notification.js"
 
 
+
 export const updateOpenedOn = async (req,res) => {
 
     try{
@@ -38,8 +39,8 @@ export const updateOpenedOn = async (req,res) => {
 
 export const fetchAllNotificationByUser = async (req,res) => {
     try{
-        
 
+        
         const { userID } = req.params
 
         const sqlAllNotifGoodInfoQuery = `SELECT n.id AS NotificationID, CONCAT(tb.firstName, ' ', tb.lastName) AS TriggeredByName, CONCAT(tu.firstName, ' ', tu.lastName) AS TargetedUserName, CONCAT(nf.firstName, ' ', nf.lastName) AS ForUser, n.type, n.formID, n.isOpened FROM Notification AS n INNER JOIN User AS tb ON n.triggeredBy = tb.id INNER JOIN User AS tu ON n.targetedUser = tu.id LEFT JOIN Form AS nf ON n.formID = nf.id WHERE tb.id = ?;`;

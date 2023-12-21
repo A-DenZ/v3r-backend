@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import { validateAudiSST, validateForm , validateIncidentReport , validateWorkingAccidentReport , validateSSD } from "../utilities/request/request.js"
 import { sendMailNotification } from "../utilities/mailjet/mailjet.js"
 import { sendNotification } from "../utilities/notification/notification.js";
+import { set } from "mongoose";
 
 
 export const storeAuditSSTResponse = async (req, res) => {
@@ -347,7 +348,8 @@ export const storeWorkingAccidentReport = async (req, res) => {
                   //sendMailNotification(recipients)
                 }
 
-                res.status(201).json(returnFormObject[0][0]) // à voir si on fetch pas la bd à la place.  
+                res.status(201).json(returnFormObject[0][0]) 
+                // à voir si on fetch pas la bd à la place.  
                 
                 console.log("on a une réponse")
 
@@ -589,40 +591,6 @@ export const updateReadStatus = async (req,res) => {
                 typeNotif = 2
                 
                 sendNotification(targetedUser, triggeredBy, typeNotif, formID)
-
-                const sqlFetchForm = "SELECT * FROM Form WHERE id = ? LIMIT 1"
-
-                const form = await pool.query(sqlFetchForm,id)
-
-                res.status(201).json(form?.[0])
-
-        }catch(error){
-                console.log(error)
-        }
-}
-
-export const updateOpenedStatus = async (req,res) => {
-
-        try{
-                let Today = new Date()
-
-                const { id,
-                        userID,
-                        accessLevel} = req.body
-
-                if(accessLevel === 2) {
-
-                        const sqlUpdateOpenedStatusSupervisor = "UPDATE Form SET isOpenSupervisor = true, openedBySupervisor = ?, openendOnSupervisor = ? WHERE id = ?"
-
-                        const updateOpenedStatus = await pool.query(sqlUpdateOpenedStatusSupervisor,[userID,Today,id])
-                }
-                
-                if (accessLevel === 3){
-
-                        const sqlUpdateOpenedStatusAdmin = "UPDATE Form SET isOpenAdmin = true, openedByAdmin = ?, openendOnAdmin = ? WHERE id = ?"
-
-                        const updateOpenedStatus = await pool.query(sqlUpdateOpenedStatusAdmin,[userID,Today,id])
-                }
 
                 const sqlFetchForm = "SELECT * FROM Form WHERE id = ? LIMIT 1"
 
