@@ -54,20 +54,22 @@ export const fetchAllNotificationByUser = async (req,res) => {
         LEFT JOIN Form AS nf ON n.formID = nf.id 
         WHERE tu.id = ?;`;
 
+
         const storeAllGoodInfoQuery = await pool.query(sqlAllNotifGoodInfoQuery, userID);
 
         console.log('UserID:', userID);
         console.log('SQL Query:', sqlAllNotifGoodInfoQuery);
         
+
         console.log('Data:', storeAllGoodInfoQuery[0])
 
         res.status(200).json(storeAllGoodInfoQuery?.[0])
-      
+
         } catch (error) {
         console.error("Error in fetchAllNotification:", error)
         res.status(500).json({ error: "Internal Server Error" })
     }
-  }
+    }
 
 
 
