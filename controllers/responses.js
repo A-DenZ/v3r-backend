@@ -1,15 +1,10 @@
 
-import pool from '../config/db.config.js'
-import dotenv from 'dotenv'
-import {
-    validateAudiSST,
-    validateForm,
-    validateIncidentReport,
-    validateWorkingAccidentReport,
-    validateSSD,
-} from '../utilities/request/request.js'
-import { sendMailNotification } from '../utilities/mailjet/mailjet.js'
-import { sendNotification } from '../utilities/notification/notification.js'
+
+import pool from "../config/db.config.js"
+import dotenv from 'dotenv';
+import { validateAudiSST, validateForm , validateIncidentReport , validateWorkingAccidentReport , validateSSD } from "../utilities/request/request.js"
+import { sendMailNotification } from "../utilities/mailjet/mailjet.js"
+import { sendNotification } from "../utilities/notification/notification.js";
 
 
 export const storeAuditSSTResponse = async (req, res) => {
@@ -136,25 +131,7 @@ export const storeAuditSSTResponse = async (req, res) => {
             console.log(recipients)
         }
 
-        let targetedUser, triggeredBy, typeNotif
 
-        if (getSuperiorID[0][0]?.superior) {
-            targetedUser = getSuperiorID[0][0]?.superior
-        }
-
-        triggeredBy = userID
-        typeNotif = 1
-
-        sendNotification(targetedUser, triggeredBy, typeNotif, formID)
-
-
-        res.status(201).json(returnFormObject[0][0])
-
-        console.log('on a une réponse')
-    } catch (error) {
-        console.log(error)
-        res.status(500).json({ message: 'Erreur du serveur' })
-    }
 }
 
 export const storeIncidentReportResponse = async (req, res) => {
@@ -246,6 +223,7 @@ export const storeIncidentReportResponse = async (req, res) => {
         res.status(500).json({ message: 'Erreur du serveur' })
     }
 }
+
 
 export const storeWorkingAccidentReport = async (req, res) => {
     try {
@@ -608,7 +586,6 @@ export const updateReadStatus = async (req, res) => {
             superiorName = storeSuperiorInfo?.[0]?.[0]?.firstName + ' ' + storeSuperiorInfo?.[0]?.[0]?.lastName
             superiorEmail = storeSuperiorInfo?.[0]?.[0]?.email
         }
-
         // send notification mail
         const recipients = [{ Email: adminEmail, Name: adminName }]
         console.log(getSuperiorID[0][0]?.superior)
@@ -637,3 +614,4 @@ export const updateReadStatus = async (req, res) => {
         console.log(error)
     }
 }
+
