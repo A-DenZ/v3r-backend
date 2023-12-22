@@ -28,6 +28,7 @@ export const sendNotification = async (targetedUser, triggeredBy, typeNotif, for
                                                                         formID        
                                                                        ]
                                                       )
+    if(targetedUser != null){
 
         const storeCreateNotif = await pool.query(sqlCreateNotif, [
                                                                     targetedUser,
@@ -37,6 +38,6 @@ export const sendNotification = async (targetedUser, triggeredBy, typeNotif, for
                                                                   ]
                                                 )
 
-
+    }                                                            
     }
 }

@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import { validateAudiSST, validateForm , validateIncidentReport , validateWorkingAccidentReport , validateSSD } from "../utilities/request/request.js"
 import { sendMailNotification } from "../utilities/mailjet/mailjet.js"
 import { sendNotification } from "../utilities/notification/notification.js";
+import { compterElementsParMois} from "../utilities/format/Analytics.js"
 
 
 export const storeAuditSSTResponse = async (req, res) => {
@@ -92,10 +93,6 @@ export const storeAuditSSTResponse = async (req, res) => {
                                                                                 ])
 
                 const returnFormObject = await pool.query(sqlFetchAllInfos, formID)
-
-                //send mail
-                await mailSender(userID)
-
                 const fetchUserSuperior = 'SELECT superior from USER WHERE id = ?'
                 const superiorInfo = 'SELECT email, firstName, lastName FROM USER WHERE id = ?'
 
@@ -124,6 +121,20 @@ export const storeAuditSSTResponse = async (req, res) => {
                         }
                 //sendMailNotification(recipients)
                 }
+
+                let targetedUser, triggeredBy, typeNotif
+
+
+                if (getSuperiorID[0][0]?.superior) {
+                        targetedUser = getSuperiorID[0][0]?.superior
+                }
+
+                triggeredBy = userID
+                typeNotif = 1
+
+                sendNotification(targetedUser, triggeredBy, typeNotif, formID)
+
+                res.status(201).json(returnFormObject[0][0])
 
         } catch (error) {
         console.log(error)
@@ -237,11 +248,6 @@ export const storeWorkingAccidentReport = async (req, res) => {
                         //sendMailNotification(recipients)
                 }
 
-                res.status(201).json(returnFormObject[0][0]) 
-                // à voir si on fetch pas la bd à la place.  
-                
-                console.log("on a une réponse")
-
                 let targetedUser, triggeredBy, typeNotif
 
 
@@ -258,8 +264,9 @@ export const storeWorkingAccidentReport = async (req, res) => {
 
                 console.log('on a une réponse')
         } catch (error) {
-        console.log(error)
-        res.status(500).json({ message: 'Erreur du serveur' })
+                console.log(error)
+                console.log('erreur du serveur')
+                res.status(500).json({ message: 'Erreur du serveur' })
         }
 }
 
@@ -339,6 +346,18 @@ export const storeIncidentReportResponse = async (req, res) => {
                 }
                 //sendMailNotification(recipients)
                 }
+
+                let targetedUser, triggeredBy, typeNotif
+
+
+                if (getSuperiorID[0][0]?.superior) {
+                        targetedUser = getSuperiorID[0][0]?.superior
+                }
+
+                triggeredBy = userID
+                typeNotif = 1
+
+                sendNotification(targetedUser, triggeredBy, typeNotif, formID)
 
                 res.status(201).json(returnFormObject[0][0])
 
@@ -444,6 +463,18 @@ export const storeSSD = async (req, res) => {
                 //sendMailNotification(recipients)
                 }
 
+                let targetedUser, triggeredBy, typeNotif
+
+
+                if (getSuperiorID[0][0]?.superior) {
+                        targetedUser = getSuperiorID[0][0]?.superior
+                }
+
+                triggeredBy = userID
+                typeNotif = 1
+
+                sendNotification(targetedUser, triggeredBy, typeNotif, formID)
+
                 res.status(201).json(returnFormObject[0][0])
 
                 console.log('On a une réponse')
@@ -516,8 +547,7 @@ export const fetchEmployeeResponse = async (req, res) => {
                 const { userID } = req.params
                 const sstQuery = 'SELECT * FROM Form INNER JOIN User ON Form.userID = User.id INNER JOIN SSD ON Form.id = SSD.formID WHERE User.superior = ?'
                 const incidentQuery = 'SELECT * FROM Form INNER JOIN User ON Form.userID = User.id INNER JOIN IncidentReport ON Form.id = IncidentReport.formID WHERE User.superior = ?'
-                const workingAccidentQuery =
-                        'SELECT * FROM Form INNER JOIN User ON Form.userID = User.id INNER JOIN WorkingAccidentReport ON Form.id = WorkingAccidentReport.formID WHERE User.superior = ?'
+                const workingAccidentQuery = 'SELECT * FROM Form INNER JOIN User ON Form.userID = User.id INNER JOIN WorkingAccidentReport ON Form.id = WorkingAccidentReport.formID WHERE User.superior = ?'
                 const auditSSTQuery = 'SELECT * FROM Form INNER JOIN User ON Form.userID = User.id INNER JOIN AuditSST ON Form.id = AuditSST.formID WHERE User.superior = ?'
 
                 const sstResponse = await pool.query(sstQuery, [userID, userID])
@@ -601,3 +631,50 @@ console.log(error)
 }
 }
 
+export const chartResponseInfo = async (req, res) => {
+
+        try{
+
+                const sstQuery = 'SELECT * FROM Form INNER JOIN SSD ON Form.id = SSD.formID'
+                const incidentQuery = 'SELECT * FROM Form INNER JOIN IncidentReport ON Form.id = IncidentReport.formID'
+                const workingAccidentQuery = 'SELECT * FROM Form INNER JOIN WorkingAccidentReport ON Form.id = WorkingAccidentReport.formID'
+                const auditSSTQuery = 'SELECT * FROM Form INNER JOIN AuditSST ON Form.id = AuditSST.formID'
+
+                const weekForm = "SELECT DATE(creationDate) AS Date, COUNT(*) AS Nombre_de_formulaires FROM form WHERE YEARWEEK(creationDate, 1) = YEARWEEK(NOW(), 1) GROUP BY DATE(creationDate) ORDER BY DATE(creationDate) ASC;"
+
+                const sstResponse = await pool.query(sstQuery)
+                const incidentResponse = await pool.query(incidentQuery)
+                const workingAccidentResponse = await pool.query(workingAccidentQuery)
+                const auditSSTResponse = await pool.query(auditSSTQuery)
+
+                const weekResponse = await pool.query(weekForm)
+
+                const responses = [
+                ...sstResponse?.[0],
+                ...incidentResponse?.[0],
+                ...workingAccidentResponse?.[0],
+                ...auditSSTResponse?.[0],
+                ]
+
+                const responsesByMonth = compterElementsParMois(responses)
+
+                // const responsesByWeek = compterElementsParSemaineEtJour(responses)
+                
+                console.log('responses', weekResponse[0])
+
+                const obj = {}
+                weekResponse[0].forEach(element => {
+                        const dayName = new Date(element.Date).toLocaleDateString('FR-CA', { weekday: 'long' });
+                        obj[dayName] = element.Nombre_de_formulaires
+                });
+
+                res.status(201).json([responsesByMonth, obj])
+
+
+
+        }catch(error){
+                console.log(error)
+                res.status(500).json({ message: 'Erreur du serveur' })
+        }
+
+}
