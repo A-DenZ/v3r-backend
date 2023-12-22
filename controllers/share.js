@@ -127,7 +127,7 @@ export const fetchMySharedDocuments = async (req, res) => {
         console.log('documents: ', documents)
 
         // return all documents if user is admin
-        if (user?.AccessLevel === 3) return res.status(200).json(documents)
+        if (user?.accessLevel === 3) return res.status(200).json(documents)
 
         // return documents that belong to user's department
         const myDocuments = documents?.filter(document => document?.departments?.includes(user?.name))
