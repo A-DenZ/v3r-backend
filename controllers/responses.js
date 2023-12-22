@@ -125,7 +125,7 @@ export const storeAuditSSTResponse = async (req, res) => {
             if (getSuperiorID[0][0]?.superior) {
                 recipients.push({ Email: superiorEmail, Name: superiorName })
             }
-            //sendMailNotification(recipients)
+            sendMailNotification(recipients)
         }
 
         let targetedUser, triggeredBy, typeNotif
@@ -147,31 +147,30 @@ export const storeAuditSSTResponse = async (req, res) => {
 }
 
 export const storeWorkingAccidentReport = async (req, res) => {
+    const {
+        userID,
+        firstName,
+        lastName,
+        formName,
+
+        employeeCode,
+        fonctionWhenHappend,
+        accidentDate,
+        accidentHour,
+        hasWitnesses,
+        witnesses,
+        accidentPlace,
+        activityCenter,
+        injuries,
+        injuriesDescription,
+        violence,
+        accidentDescription,
+        firstAid,
+        secouristName,
+        medicalConsultation,
+    } = req.body
+
     try {
-        const {
-            userID,
-            firstName,
-            lastName,
-            formName,
-
-            employeeCode,
-            fonctionWhenHappend,
-            accidentDate,
-            accidentHour,
-            hasWitnesses,
-            witnesses,
-            accidentPlace,
-            activityCenter,
-            injuries,
-            injuriesDescription,
-            violence,
-            accidentDescription,
-            firstAid,
-            secouristName,
-            medicalConsultation,
-        } = req.body
-
-
         const storeValidForm = validateForm(userID, firstName, lastName, formName)
         const storeValidWorkingAccidentReport = validateWorkingAccidentReport(
             employeeCode,
@@ -244,7 +243,7 @@ export const storeWorkingAccidentReport = async (req, res) => {
         const adminEmail = process.env.ADMIN_EMAIL
 
         const getSuperiorID = await pool.query(fetchUserSuperior, userID)
-        if (getSuperiorID[0][0]?.superior) {
+        if (getSuperiorID?.[0]?.[0]?.superior) {
             const storeSuperiorInfo = await pool.query(superiorInfo, getSuperiorID[0][0]?.superior)
 
             superiorName = storeSuperiorInfo?.[0]?.[0]?.firstName + ' ' + storeSuperiorInfo?.[0]?.[0]?.lastName
@@ -257,7 +256,7 @@ export const storeWorkingAccidentReport = async (req, res) => {
             if (getSuperiorID[0][0]?.superior) {
                 recipients.push({ Email: superiorEmail, Name: superiorName })
             }
-            //sendMailNotification(recipients)
+            sendMailNotification(recipients)
         }
 
         let targetedUser, triggeredBy, typeNotif
@@ -359,7 +358,7 @@ export const storeIncidentReportResponse = async (req, res) => {
             if (getSuperiorID[0][0]?.superior) {
                 recipients.push({ Email: superiorEmail, Name: superiorName })
             }
-            //sendMailNotification(recipients)
+            sendMailNotification(recipients)
         }
 
         let targetedUser, triggeredBy, typeNotif
@@ -610,7 +609,7 @@ export const storeSSD = async (req, res) => {
             if (getSuperiorID[0][0]?.superior) {
                 recipients.push({ Email: superiorEmail, Name: superiorName })
             }
-            //sendMailNotification(recipients)
+            sendMailNotification(recipients)
         }
 
         let targetedUser, triggeredBy, typeNotif
