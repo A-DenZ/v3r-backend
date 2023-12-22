@@ -26,4 +26,4 @@ const  mailSender =  async (userID) => {
 
 }
 
-export default mailSender;
+export default mailSender

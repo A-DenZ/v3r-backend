@@ -1,4 +1,5 @@
 import { defaultInputFilter , numberFilter, driverLicenseFilter, dateFilter, hourFilter } from "../regexp/regexp.js"
+import { dateFormat } from "../format/DateFormat.js"
 
 export const validateForm = (userID,firstName,lastName,formName) => {
     let isValid = true
@@ -61,6 +62,11 @@ export const validateAudiSST = (incidentPlace, incidentDate, incidentHour, EPI, 
     if (!dateFilter.test(incidentDate) || incidentDate == "" || incidentDate == null) {
         isValid = false;
         console.log("2" , incidentDate)
+    }
+
+    if(dateFormat() < incidentDate){
+        isValid = false;
+        console.log("2.5" , incidentDate)
     }
 
     if (!hourFilter.test(incidentHour) || incidentHour == "" || incidentHour == null) {
@@ -209,6 +215,11 @@ export const validateWorkingAccidentReport = (employeeCode,fonctionWhenHappend,a
         console.log("accidentDate")
     }
 
+    if(dateFormat() < accidentDate){
+        isValid = false
+        console.log("accidentDate 2.5 ")
+    }
+
     if(!hourFilter.test(accidentHour) || accidentHour == "" || accidentHour == null){
         isValid = false
         console.log("accidentHour")
@@ -303,6 +314,11 @@ export const validateSSD = (employeeCode,fonctionWhenHappend,activityCenter,inci
     if(!dateFilter.test(incidentDate) || incidentDate == "" || incidentDate == null){
         isValid = false
         console.log("incidentDate")
+    }
+
+    if(dateFormat() < incidentDate){ 
+        isValid = false
+        console.log("incidentDate 2.5 ")
     }
 
     if(!hourFilter.test(incidentHour) || incidentHour == "" || incidentHour == null){
