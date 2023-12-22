@@ -4,6 +4,6 @@ import { updateOpenedOn, fetchAllNotificationByUser } from '../controllers/notif
 const router = express.Router();
 
 router.get('/fetch/:userID' ,fetchAllNotificationByUser );
-router.put('/opened' , updateOpenedOn)
+router.patch('/open/:id' , updateOpenedOn)
 
 export default router;

@@ -21,7 +21,7 @@ app.use(cors());
 
 
 app.use('/notification', notificationRoutes)
-app.use('/user' , userRoutes);
+app.use('/users' , userRoutes);
 app.use('/response', responseRoutes);
 app.use('/documents', shareRoutes);
 app.use('/departments', departmentRoutes)

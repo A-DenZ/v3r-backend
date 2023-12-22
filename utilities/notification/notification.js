@@ -3,7 +3,7 @@ import pool from "../../config/db.config.js"
 export const sendNotification = async (targetedUser, triggeredBy, typeNotif, formID) => {
     
     const sqlCreateNotif = "INSERT INTO Notification (targetedUser, triggeredBy, type, formID) VALUES (?,?,?,?)"
-    const sqlGetAdmin = "SELECT * FROM User WHERE AccessLevel = 3 LIMIT 1"
+    const sqlGetAdmin = "SELECT * FROM User WHERE accessLevel = 3 LIMIT 1"
     
     const storeGetAdmin = await pool.query(sqlGetAdmin)
 
