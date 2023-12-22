@@ -110,3 +110,32 @@ export const updateDocument = async (req, res) => {
         res.status(500).json({ message: 'Erreur du serveur' })
     }
 }
+
+export const fetchMySharedDocuments = async (req, res) => {
+    const { id } = req.params
+
+    try {
+        const userResponse = await pool.query('SELECT * FROM user INNER JOIN department WHERE user.id = ?', [id])
+        const user = userResponse?.[0]?.[0]
+        
+        if (!user) throw new Error('Utilisateur non trouvé')
+        console.log('User: ', user?.firstName)
+
+        // fetch all documents
+        const documentsResponse = await pool.query(fetchAllDocuments)
+        const documents = documentsResponse?.[0]
+        console.log('documents: ', documents)
+
+        // return all documents if user is admin
+        if (user?.AccessLevel === 3) return res.status(200).json(documents)
+
+        // return documents that belong to user's department
+        const myDocuments = documents?.filter(document => document?.departments?.includes(user?.name))
+        console.log('myDocuments: ', myDocuments)
+
+        res.status(200).json(myDocuments)
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: 'Erreur du serveur' })
+    }
+}

@@ -503,8 +503,6 @@ export const fetchMyResponse = async (req, res) => {
         const { userID } = req.params
         
     try {
-        console.log('My userID', userID)
-
         const sstQuery = 'SELECT * FROM Form INNER JOIN SSD ON Form.id = SSD.formID WHERE userID = ?'
         const incidentQuery = 'SELECT * FROM Form INNER JOIN IncidentReport ON Form.id = IncidentReport.formID WHERE userID = ?'
         const workingAccidentQuery =
@@ -523,8 +521,6 @@ export const fetchMyResponse = async (req, res) => {
             ...auditSSTResponse?.[0],
         ]
 
-        console.log('My responses', responses)
-
         res.status(201).json(responses)
     } catch (error) {
         console.log(error)
@@ -532,19 +528,19 @@ export const fetchMyResponse = async (req, res) => {
 }
 
 export const fetchEmployeeResponse = async (req, res) => {
-        const { userID } = req.params
+    const { userID } = req.params
         
     try {
-        const sstQuery = 'SELECT * FROM Form INNER JOIN User ON Form.userID = User.id INNER JOIN SSD ON Form.id = SSD.formID WHERE User.superior = ?'
-        const incidentQuery = 'SELECT * FROM Form INNER JOIN User ON Form.userID = User.id INNER JOIN IncidentReport ON Form.id = IncidentReport.formID WHERE User.superior = ?'
+        const sstQuery = 'SELECT Form.id AS id, Form.*, SSD.* FROM Form INNER JOIN User ON Form.userID = User.id INNER JOIN SSD ON Form.id = SSD.formID WHERE User.superior = ?'
+        const incidentQuery = 'SELECT Form.id AS id, Form.*, IncidentReport.* FROM Form INNER JOIN User ON Form.userID = User.id INNER JOIN IncidentReport ON Form.id = IncidentReport.formID WHERE User.superior = ?'
         const workingAccidentQuery =
-            'SELECT * FROM Form INNER JOIN User ON Form.userID = User.id INNER JOIN WorkingAccidentReport ON Form.id = WorkingAccidentReport.formID WHERE User.superior = ?'
-        const auditSSTQuery = 'SELECT * FROM Form INNER JOIN User ON Form.userID = User.id INNER JOIN AuditSST ON Form.id = AuditSST.formID WHERE User.superior = ?'
+            'SELECT Form.id AS id, Form.*, WorkingAccidentReport.* FROM Form INNER JOIN User ON Form.userID = User.id INNER JOIN WorkingAccidentReport ON Form.id = WorkingAccidentReport.formID WHERE User.superior = ?'
+        const auditSSTQuery = 'SELECT Form.id AS id, Form.*, AuditSST.* FROM Form INNER JOIN User ON Form.userID = User.id INNER JOIN AuditSST ON Form.id = AuditSST.formID WHERE User.superior = ?'
 
-        const sstResponse = await pool.query(sstQuery, [userID, userID])
-        const incidentResponse = await pool.query(incidentQuery, [userID, userID])
-        const workingAccidentResponse = await pool.query(workingAccidentQuery, [userID, userID])
-        const auditSSTResponse = await pool.query(auditSSTQuery, [userID, userID])
+        const sstResponse = await pool.query(sstQuery, [userID])
+        const incidentResponse = await pool.query(incidentQuery, [userID])
+        const workingAccidentResponse = await pool.query(workingAccidentQuery, [userID])
+        const auditSSTResponse = await pool.query(auditSSTQuery, [userID])
 
         const responses = [
             ...sstResponse?.[0],
@@ -552,6 +548,8 @@ export const fetchEmployeeResponse = async (req, res) => {
             ...workingAccidentResponse?.[0],
             ...auditSSTResponse?.[0],
         ]
+
+        console.log('------ Responses -------', responses)
 
         res.status(201).json(responses)
     } catch (error) {
